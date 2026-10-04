@@ -1,12 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Domain.Configurations;
+using Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace Repository.Data
 {
-    public class AppDbContext
+    public class AppDbContext : DbContext
     {
+        public DbSet<Course> Courses { get; set; }
+        public DbSet<CourseModule> CourseModules { get; set; }
+        public DbSet<Lesson> Lessons { get; set; }
+        public DbSet<CourseOutcome> CourseOutcomes { get; set; }
+        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+            builder.ApplyConfigurationsFromAssembly(typeof(CourseConfiguration).Assembly);
+        }
     }
 }

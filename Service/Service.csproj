@@ -10,9 +10,5 @@
     <ProjectReference Include="..\Repository\Repository.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Helpers\DTOs\" />
-    <Folder Include="Services\Interfaces\" />
-  </ItemGroup>
 
 </Project>

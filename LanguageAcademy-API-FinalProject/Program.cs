@@ -1,15 +1,37 @@
+using LanguageAcademy_API_FinalProject.Helpers;
+using Microsoft.EntityFrameworkCore;
+using Repository;
+using Repository.Data;
+using Service;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+var connectionString = ConnectionStringResolver.Resolve(
+    builder.Configuration,
+    LoggerFactory.Create(logging => logging.AddConsole()).CreateLogger("Database"));
+
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlServer(connectionString));
+
+builder.Services.AddServiceLayer();
+builder.Services.AddRepositoryLayer();
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    if (db.Database.GetMigrations().Any())
+        await db.Database.MigrateAsync();
+    else
+        await db.Database.EnsureCreatedAsync();
+    await CourseSeeder.SeedAsync(db);
+}
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -17,9 +39,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
 app.MapControllers();
-
 app.Run();
