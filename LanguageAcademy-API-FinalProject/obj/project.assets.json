@@ -88,6 +88,42 @@
         "frameworkReferences": [
           "Microsoft.AspNetCore.App"
         ]
+      },
+      "Domain/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v8.0",
+        "compile": {
+          "bin/placeholder/Domain.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Domain.dll": {}
+        }
+      },
+      "Repository/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v8.0",
+        "dependencies": {
+          "Domain": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/Repository.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Repository.dll": {}
+        }
+      },
+      "Service/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v8.0",
+        "dependencies": {
+          "Repository": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/Service.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Service.dll": {}
+        }
       }
     }
   },
@@ -439,10 +475,26 @@
         "swashbuckle.aspnetcore.swaggerui.6.6.2.nupkg.sha512",
         "swashbuckle.aspnetcore.swaggerui.nuspec"
       ]
+    },
+    "Domain/1.0.0": {
+      "type": "project",
+      "path": "../Domain/Domain.csproj",
+      "msbuildProject": "../Domain/Domain.csproj"
+    },
+    "Repository/1.0.0": {
+      "type": "project",
+      "path": "../Repository/Repository.csproj",
+      "msbuildProject": "../Repository/Repository.csproj"
+    },
+    "Service/1.0.0": {
+      "type": "project",
+      "path": "../Service/Service.csproj",
+      "msbuildProject": "../Service/Service.csproj"
     }
   },
   "projectFileDependencyGroups": {
     "net8.0": [
+      "Service >= 1.0.0",
       "Swashbuckle.AspNetCore >= 6.6.2"
     ]
   },
@@ -453,11 +505,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\User\\source\\repos\\LanguageAcademy-API-FinalProject\\LanguageAcademy-API-FinalProject\\LanguageAcademy-API-FinalProject.csproj",
+      "projectUniqueName": "C:\\Users\\User\\Desktop\\LanguageAcademy-API-FinalProject\\LanguageAcademy-API-FinalProject\\LanguageAcademy-API-FinalProject.csproj",
       "projectName": "LanguageAcademy-API-FinalProject",
-      "projectPath": "C:\\Users\\User\\source\\repos\\LanguageAcademy-API-FinalProject\\LanguageAcademy-API-FinalProject\\LanguageAcademy-API-FinalProject.csproj",
+      "projectPath": "C:\\Users\\User\\Desktop\\LanguageAcademy-API-FinalProject\\LanguageAcademy-API-FinalProject\\LanguageAcademy-API-FinalProject.csproj",
       "packagesPath": "C:\\Users\\User\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\User\\source\\repos\\LanguageAcademy-API-FinalProject\\LanguageAcademy-API-FinalProject\\obj\\",
+      "outputPath": "C:\\Users\\User\\Desktop\\LanguageAcademy-API-FinalProject\\LanguageAcademy-API-FinalProject\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -478,7 +530,11 @@
         "net8.0": {
           "framework": "net8.0",
           "targetAlias": "net8.0",
-          "projectReferences": {}
+          "projectReferences": {
+            "C:\\Users\\User\\Desktop\\LanguageAcademy-API-FinalProject\\Service\\Service.csproj": {
+              "projectPath": "C:\\Users\\User\\Desktop\\LanguageAcademy-API-FinalProject\\Service\\Service.csproj"
+            }
+          }
         }
       },
       "warningProperties": {

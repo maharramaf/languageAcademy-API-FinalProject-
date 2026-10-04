@@ -1,3 +1,6 @@
 <Solution>
+  <Project Path="Domain/Domain.csproj" Id="ad679116-39d3-434b-88de-5f8992cc8426" />
   <Project Path="LanguageAcademy-API-FinalProject/LanguageAcademy-API-FinalProject.csproj" />
+  <Project Path="Repository/Repository.csproj" Id="94323a9e-c957-428b-8965-f5250334ec20" />
+  <Project Path="Service/Service.csproj" Id="997fc80d-bc04-4ab4-a1db-ada8dd8efc76" />
 </Solution>
