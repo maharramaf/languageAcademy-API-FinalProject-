@@ -28,6 +28,7 @@ using (var scope = app.Services.CreateScope())
     await db.Database.MigrateAsync();
     await CourseSeeder.SeedAsync(db);
     await HeroSeeder.SeedAsync(db);
+    await AboutSeeder.SeedAsync(db);
 }
 
 if (app.Environment.IsDevelopment())

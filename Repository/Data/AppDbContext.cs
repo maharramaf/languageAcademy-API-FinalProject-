@@ -11,6 +11,7 @@ namespace Repository.Data
         public DbSet<Lesson> Lessons { get; set; }
         public DbSet<CourseOutcome> CourseOutcomes { get; set; }
         public DbSet<Hero> Heroes { get; set; }
+        public DbSet<About> Abouts { get; set; }
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
         protected override void OnModelCreating(ModelBuilder builder)
         {

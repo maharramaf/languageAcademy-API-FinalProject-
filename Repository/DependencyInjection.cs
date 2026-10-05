@@ -18,6 +18,7 @@ namespace Repository
             services.AddScoped<ILessonRepository, LessonRepository>();
             services.AddScoped<ICourseOutcomeRepository, CourseOutcomeRepository>();
             services.AddScoped<IHeroRepository, HeroRepository>();
+            services.AddScoped<IAboutRepository, AboutRepository>();
             services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
             return services;
         }
