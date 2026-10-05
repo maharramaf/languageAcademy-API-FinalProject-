@@ -21,6 +21,8 @@ namespace Repository
             services.AddScoped<IAboutRepository, AboutRepository>();
             services.AddScoped<IWhyChooseRepository, WhyChooseRepository>();
             services.AddScoped<IWhyChooseCardRepository, WhyChooseCardRepository>();
+            services.AddScoped<IHowWeWorkRepository, HowWeWorkRepository>();
+            services.AddScoped<IHowWeWorkCardRepository, HowWeWorkCardRepository>();
             services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
             return services;
         }
