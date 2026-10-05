@@ -25,11 +25,9 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    if (db.Database.GetMigrations().Any())
-        await db.Database.MigrateAsync();
-    else
-        await db.Database.EnsureCreatedAsync();
+    await db.Database.MigrateAsync();
     await CourseSeeder.SeedAsync(db);
+    await HeroSeeder.SeedAsync(db);
 }
 
 if (app.Environment.IsDevelopment())

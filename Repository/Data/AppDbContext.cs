@@ -10,6 +10,7 @@ namespace Repository.Data
         public DbSet<CourseModule> CourseModules { get; set; }
         public DbSet<Lesson> Lessons { get; set; }
         public DbSet<CourseOutcome> CourseOutcomes { get; set; }
+        public DbSet<Hero> Heroes { get; set; }
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
         protected override void OnModelCreating(ModelBuilder builder)
         {
