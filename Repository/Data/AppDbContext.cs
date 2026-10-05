@@ -16,6 +16,7 @@ namespace Repository.Data
         public DbSet<WhyChooseCard> WhyChooseCards { get; set; }
         public DbSet<HowWeWork> HowWeWorks { get; set; }
         public DbSet<HowWeWorkCard> HowWeWorkCards { get; set; }
+        public DbSet<AboutHero> AboutHeroes { get; set; }
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
         protected override void OnModelCreating(ModelBuilder builder)
         {
