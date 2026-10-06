@@ -27,6 +27,8 @@ namespace Domain.Configurations
             builder.Property(m => m.YearsStat).IsRequired().HasMaxLength(40);
             builder.Property(m => m.YearsLabelLineOne).IsRequired().HasMaxLength(80);
             builder.Property(m => m.YearsLabelLineTwo).IsRequired().HasMaxLength(80);
+            builder.Property(m => m.PageKey).IsRequired().HasMaxLength(40).HasDefaultValue("home");
+            builder.HasIndex(m => m.PageKey).IsUnique();
             builder.Property(m => m.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
         }
     }

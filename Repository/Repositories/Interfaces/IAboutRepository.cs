@@ -9,5 +9,6 @@ namespace Repository.Repositories.Interfaces
 {
     public interface IAboutRepository : IBaseRepository<About>
     {
+        Task<About?> GetByPageKeyAsync(string pageKey);
     }
 }

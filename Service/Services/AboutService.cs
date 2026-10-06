@@ -1,12 +1,8 @@
-using Domain.Entities;
+
 using Repository.Repositories.Interfaces;
 using Service.Helpers.DTOs.Abouts;
 using Service.Services.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace Service.Services
 {
@@ -18,9 +14,10 @@ namespace Service.Services
             _aboutRepo = aboutRepo;
         }
 
-        public async Task<AboutDto?> GetUIAsync()
+        public async Task<AboutDto?> GetUIAsync(string page = "home")
         {
-            var about = await _aboutRepo.GetAsync();
+            var pageKey = string.Equals(page, "about", StringComparison.OrdinalIgnoreCase) ? "about" : "home";
+            var about = await _aboutRepo.GetByPageKeyAsync(pageKey);
             if (about is null) return null;
 
             return new AboutDto

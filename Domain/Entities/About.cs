@@ -19,5 +19,6 @@ namespace Domain.Entities
         public string YearsStat { get; set; } = string.Empty;
         public string YearsLabelLineOne { get; set; } = string.Empty;
         public string YearsLabelLineTwo { get; set; } = string.Empty;
+        public string PageKey { get; set; } = "home";
     }
 }

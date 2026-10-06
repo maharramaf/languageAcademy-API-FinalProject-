@@ -15,9 +15,9 @@ namespace LanguageAcademy_API_FinalProject.Controllers.Client
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAboutAsync()
+        public async Task<IActionResult> GetAboutAsync([FromQuery] string page = "home")
         {
-            var about = await _aboutService.GetUIAsync();
+            var about = await _aboutService.GetUIAsync(page);
             if (about is null) return NotFound();
             return Ok(about);
         }

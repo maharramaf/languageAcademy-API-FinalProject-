@@ -9,6 +9,6 @@ namespace Service.Services.Interfaces
 {
     public interface IAboutService
     {
-        Task<AboutDto?> GetUIAsync();
+        Task<AboutDto?> GetUIAsync(string page = "home");
     }
 }
