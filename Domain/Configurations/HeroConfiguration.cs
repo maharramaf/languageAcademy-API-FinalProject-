@@ -13,20 +13,20 @@ namespace Domain.Configurations
     {
         public void Configure(EntityTypeBuilder<Hero> builder)
         {
-            builder.Property(m => m.Eyebrow).IsRequired().HasMaxLength(80);
+            builder.Property(m => m.Subtitle).IsRequired().HasMaxLength(80);
             builder.Property(m => m.Title).IsRequired().HasMaxLength(160);
-            builder.Property(m => m.Lead).IsRequired().HasMaxLength(500);
-            builder.Property(m => m.PrimaryButtonText).IsRequired().HasMaxLength(80);
-            builder.Property(m => m.SecondaryButtonText).IsRequired().HasMaxLength(80);
-            builder.Property(m => m.PointOne).IsRequired().HasMaxLength(80);
-            builder.Property(m => m.PointTwo).IsRequired().HasMaxLength(80);
-            builder.Property(m => m.PointThree).IsRequired().HasMaxLength(80);
+            builder.Property(m => m.Text).IsRequired().HasMaxLength(500);
+            builder.Property(m => m.Button1).IsRequired().HasMaxLength(80);
+            builder.Property(m => m.Button2).IsRequired().HasMaxLength(80);
+            builder.Property(m => m.Point1).IsRequired().HasMaxLength(80);
+            builder.Property(m => m.Point2).IsRequired().HasMaxLength(80);
+            builder.Property(m => m.Point3).IsRequired().HasMaxLength(80);
             builder.Property(m => m.Image).IsRequired().HasMaxLength(260);
             builder.Property(m => m.ImageAlt).IsRequired().HasMaxLength(200);
-            builder.Property(m => m.StudentsStat).IsRequired().HasMaxLength(40);
-            builder.Property(m => m.StudentsLabel).IsRequired().HasMaxLength(80);
-            builder.Property(m => m.RatingStat).IsRequired().HasMaxLength(40);
-            builder.Property(m => m.RatingLabel).IsRequired().HasMaxLength(80);
+            builder.Property(m => m.Students).IsRequired().HasMaxLength(40);
+            builder.Property(m => m.StudentsText).IsRequired().HasMaxLength(80);
+            builder.Property(m => m.Rating).IsRequired().HasMaxLength(40);
+            builder.Property(m => m.RatingText).IsRequired().HasMaxLength(80);
             builder.Property(m => m.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
         }
     }

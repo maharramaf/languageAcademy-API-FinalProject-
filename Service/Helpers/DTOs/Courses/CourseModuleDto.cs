@@ -10,8 +10,8 @@ namespace Service.Helpers.DTOs.Courses
     {
         public int Id { get; set; }
         public string Title { get; set; } = string.Empty;
-        public string Meta { get; set; } = string.Empty;
-        public int SortOrder { get; set; }
+        public string Info { get; set; } = string.Empty;
+        public int Order { get; set; }
         public List<LessonDto> Lessons { get; set; } = new();
     }
 }

@@ -13,7 +13,7 @@ namespace Domain.Configurations
     {
         public void Configure(EntityTypeBuilder<HowWeWork> builder)
         {
-            builder.Property(m => m.Eyebrow).IsRequired().HasMaxLength(80);
+            builder.Property(m => m.Subtitle).IsRequired().HasMaxLength(80);
             builder.Property(m => m.Title).IsRequired().HasMaxLength(160);
             builder.Property(m => m.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
         }

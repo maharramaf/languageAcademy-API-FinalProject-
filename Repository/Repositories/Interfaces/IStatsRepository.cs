@@ -5,6 +5,6 @@ namespace Repository.Repositories.Interfaces
 {
     public interface IStatsRepository : IBaseRepository<Stats>
     {
-        Task<Stats?> GetWithItemsAsync();
+        Task<Stats?> GetLatestAsync();
     }
 }

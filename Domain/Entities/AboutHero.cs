@@ -9,8 +9,8 @@ namespace Domain.Entities
 {
     public class AboutHero : BaseEntity
     {
-        public string Eyebrow { get; set; } = string.Empty;
+        public string Subtitle { get; set; } = string.Empty;
         public string Title { get; set; } = string.Empty;
-        public string Lead { get; set; } = string.Empty;
+        public string Text { get; set; } = string.Empty;
     }
 }

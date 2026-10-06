@@ -11,8 +11,8 @@ namespace Service.Helpers.DTOs.Courses
         public int Id { get; set; }
         public string Title { get; set; } = string.Empty;
         public string Kind { get; set; } = string.Empty;
-        public string? VideoUrl { get; set; }
-        public int DurationSeconds { get; set; }
-        public int SortOrder { get; set; }
+        public string? Video { get; set; }
+        public int Seconds { get; set; }
+        public int Order { get; set; }
     }
 }

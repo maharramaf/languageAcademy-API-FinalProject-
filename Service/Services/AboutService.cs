@@ -23,20 +23,20 @@ namespace Service.Services
             return new AboutDto
             {
                 Id = about.Id,
-                Eyebrow = about.Eyebrow,
+                Subtitle = about.Subtitle,
                 Title = about.Title,
-                ParagraphOne = about.ParagraphOne,
-                ParagraphTwo = about.ParagraphTwo,
-                FeatureOne = about.FeatureOne,
-                FeatureTwo = about.FeatureTwo,
-                FeatureThree = about.FeatureThree,
-                FeatureFour = about.FeatureFour,
-                ButtonText = about.ButtonText,
+                Text1 = about.Text1,
+                Text2 = about.Text2,
+                Feature1 = about.Feature1,
+                Feature2 = about.Feature2,
+                Feature3 = about.Feature3,
+                Feature4 = about.Feature4,
+                Button = about.Button,
                 Image = about.Image,
                 ImageAlt = about.ImageAlt,
-                YearsStat = about.YearsStat,
-                YearsLabelLineOne = about.YearsLabelLineOne,
-                YearsLabelLineTwo = about.YearsLabelLineTwo
+                Years = about.Years,
+                YearsText1 = about.YearsText1,
+                YearsText2 = about.YearsText2
             };
         }
     }

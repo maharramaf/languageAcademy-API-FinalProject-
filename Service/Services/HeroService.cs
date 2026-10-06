@@ -26,20 +26,20 @@ namespace Service.Services
             return new HeroDto
             {
                 Id = hero.Id,
-                Eyebrow = hero.Eyebrow,
+                Subtitle = hero.Subtitle,
                 Title = hero.Title,
-                Lead = hero.Lead,
-                PrimaryButtonText = hero.PrimaryButtonText,
-                SecondaryButtonText = hero.SecondaryButtonText,
-                PointOne = hero.PointOne,
-                PointTwo = hero.PointTwo,
-                PointThree = hero.PointThree,
+                Text = hero.Text,
+                Button1 = hero.Button1,
+                Button2 = hero.Button2,
+                Point1 = hero.Point1,
+                Point2 = hero.Point2,
+                Point3 = hero.Point3,
                 Image = hero.Image,
                 ImageAlt = hero.ImageAlt,
-                StudentsStat = hero.StudentsStat,
-                StudentsLabel = hero.StudentsLabel,
-                RatingStat = hero.RatingStat,
-                RatingLabel = hero.RatingLabel
+                Students = hero.Students,
+                StudentsText = hero.StudentsText,
+                Rating = hero.Rating,
+                RatingText = hero.RatingText
             };
         }
     }

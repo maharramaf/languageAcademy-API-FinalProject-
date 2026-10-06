@@ -26,16 +26,16 @@ namespace Service.Services
             return new WhyChooseDto
             {
                 Id = section.Id,
-                Eyebrow = section.Eyebrow,
+                Subtitle = section.Subtitle,
                 Title = section.Title,
-                Lead = section.Lead,
-                Cards = section.Cards.OrderBy(m => m.SortOrder).Select(m => new WhyChooseCardDto
+                Text = section.Text,
+                Cards = section.Cards.OrderBy(m => m.Order).Select(m => new WhyChooseCardDto
                 {
                     Id = m.Id,
                     Icon = m.Icon,
                     Title = m.Title,
                     Text = m.Text,
-                    SortOrder = m.SortOrder
+                    Order = m.Order
                 }).ToList()
             };
         }

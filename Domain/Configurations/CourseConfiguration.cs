@@ -22,7 +22,7 @@ namespace Domain.Configurations
             builder.Property(m => m.Image).HasMaxLength(260);
             builder.Property(m => m.Summary).HasMaxLength(500);
             builder.Property(m => m.Overview).HasMaxLength(2000);
-            builder.Property(m => m.PreviewVideoUrl).HasMaxLength(500);
+            builder.Property(m => m.Video).HasMaxLength(500);
             builder.Property(m => m.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
         }
     }

@@ -11,20 +11,20 @@ namespace Repository.Data
 
             context.Heroes.Add(new Hero
             {
-                Eyebrow = "Modern language school",
+                Subtitle = "Modern language school",
                 Title = "Learn Languages. Open New Doors.",
-                Lead = "Improve your language skills with professional teachers and modern learning methods.",
-                PrimaryButtonText = "Explore Courses",
-                SecondaryButtonText = "Get Started",
-                PointOne = "Small classes",
-                PointTwo = "Certified teachers",
-                PointThree = "Online and on campus",
+                Text = "Improve your language skills with professional teachers and modern learning methods.",
+                Button1 = "Explore Courses",
+                Button2 = "Get Started",
+                Point1 = "Small classes",
+                Point2 = "Certified teachers",
+                Point3 = "Online and on campus",
                 Image = "images/hero.jpg",
                 ImageAlt = "Students collaborating during a language lesson",
-                StudentsStat = "1,000+",
-                StudentsLabel = "Active students",
-                RatingStat = "4.9/5",
-                RatingLabel = "Average rating"
+                Students = "1,000+",
+                StudentsText = "Active students",
+                Rating = "4.9/5",
+                RatingText = "Average rating"
             });
 
             await context.SaveChangesAsync();

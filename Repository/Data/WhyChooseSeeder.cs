@@ -11,9 +11,9 @@ namespace Repository.Data
 
             context.WhyChooses.Add(new WhyChoose
             {
-                Eyebrow = "Why choose us",
+                Subtitle = "Why choose us",
                 Title = "A school built around speaking",
-                Lead = "The method is simple: small groups, useful materials, and teachers who know how adults actually learn.",
+                Text = "The method is simple: small groups, useful materials, and teachers who know how adults actually learn.",
                 Cards = new List<WhyChooseCard>
                 {
                     Card(1, "bi bi-person-workspace", "Expert Teachers", "Certified instructors with classroom experience and clear, kind feedback."),
@@ -32,7 +32,7 @@ namespace Repository.Data
         {
             return new WhyChooseCard
             {
-                SortOrder = sortOrder,
+                Order = sortOrder,
                 Icon = icon,
                 Title = title,
                 Text = text

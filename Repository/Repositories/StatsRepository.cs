@@ -10,10 +10,9 @@ namespace Repository.Repositories
     {
         public StatsRepository(AppDbContext context) : base(context) { }
 
-        public async Task<Stats?> GetWithItemsAsync()
+        public async Task<Stats?> GetLatestAsync()
         {
             return await _dbSet.AsNoTracking()
-                .Include(m => m.Items)
                 .OrderByDescending(m => m.CreatedAt)
                 .FirstOrDefaultAsync();
         }

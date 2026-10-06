@@ -12,8 +12,8 @@ namespace Domain.Entities
         public int CourseId { get; set; }
         public Course Course { get; set; } = null!;
         public string Title { get; set; } = string.Empty;
-        public string Meta { get; set; } = string.Empty;
-        public int SortOrder { get; set; }
+        public string Info { get; set; } = string.Empty;
+        public int Order { get; set; }
         public ICollection<Lesson> Lessons { get; set; } = new List<Lesson>();
     }
 }

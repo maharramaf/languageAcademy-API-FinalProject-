@@ -13,9 +13,9 @@ namespace Domain.Configurations
     {
         public void Configure(EntityTypeBuilder<WhyChoose> builder)
         {
-            builder.Property(m => m.Eyebrow).IsRequired().HasMaxLength(80);
+            builder.Property(m => m.Subtitle).IsRequired().HasMaxLength(80);
             builder.Property(m => m.Title).IsRequired().HasMaxLength(160);
-            builder.Property(m => m.Lead).IsRequired().HasMaxLength(500);
+            builder.Property(m => m.Text).IsRequired().HasMaxLength(500);
             builder.Property(m => m.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
         }
     }

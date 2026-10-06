@@ -14,7 +14,7 @@ namespace Domain.Configurations
         public void Configure(EntityTypeBuilder<Lesson> builder)
         {
             builder.Property(m => m.Title).IsRequired().HasMaxLength(160);
-            builder.Property(m => m.VideoUrl).HasMaxLength(500);
+            builder.Property(m => m.Video).HasMaxLength(500);
             builder.Property(m => m.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
             builder.HasOne(m => m.CourseModule)
                 .WithMany(m => m.Lessons)

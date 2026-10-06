@@ -19,7 +19,7 @@ namespace Domain.Entities
         public string Image { get; set; } = string.Empty;
         public string Summary { get; set; } = string.Empty;
         public string Overview { get; set; } = string.Empty;
-        public string? PreviewVideoUrl { get; set; }
+        public string? Video { get; set; }
         public ICollection<CourseModule> Modules { get; set; } = new List<CourseModule>();
         public ICollection<CourseOutcome> Outcomes { get; set; } = new List<CourseOutcome>();
     }

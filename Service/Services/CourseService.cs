@@ -33,7 +33,7 @@ namespace Service.Services
                 Image = m.Image,
                 Summary = m.Summary,
                 LessonCount = m.Modules.Sum(x => x.Lessons.Count),
-                PreviewVideoUrl = m.PreviewVideoUrl
+                Video = m.Video
             });
         }
 
@@ -56,22 +56,22 @@ namespace Service.Services
                 Image = course.Image,
                 Summary = course.Summary,
                 Overview = course.Overview,
-                PreviewVideoUrl = course.PreviewVideoUrl,
-                Outcomes = course.Outcomes.OrderBy(m => m.SortOrder).Select(m => m.Text).ToList(),
-                Modules = course.Modules.OrderBy(m => m.SortOrder).Select(m => new CourseModuleDto
+                Video = course.Video,
+                Outcomes = course.Outcomes.OrderBy(m => m.Order).Select(m => m.Text).ToList(),
+                Modules = course.Modules.OrderBy(m => m.Order).Select(m => new CourseModuleDto
                 {
                     Id = m.Id,
                     Title = m.Title,
-                    Meta = m.Meta,
-                    SortOrder = m.SortOrder,
-                    Lessons = m.Lessons.OrderBy(x => x.SortOrder).Select(x => new LessonDto
+                    Info = m.Info,
+                    Order = m.Order,
+                    Lessons = m.Lessons.OrderBy(x => x.Order).Select(x => new LessonDto
                     {
                         Id = x.Id,
                         Title = x.Title,
                         Kind = x.Kind.ToString().ToLowerInvariant(),
-                        VideoUrl = x.VideoUrl,
-                        DurationSeconds = x.DurationSeconds,
-                        SortOrder = x.SortOrder
+                        Video = x.Video,
+                        Seconds = x.Seconds,
+                        Order = x.Order
                     }).ToList()
                 }).ToList()
             };

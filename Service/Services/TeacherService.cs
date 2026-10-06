@@ -21,10 +21,10 @@ namespace Service.Services
             return new TeacherSectionDto
             {
                 Id = section.Id,
-                Eyebrow = section.Eyebrow,
+                Subtitle = section.Subtitle,
                 Title = section.Title,
-                Lead = section.Lead,
-                Teachers = section.Teachers.OrderBy(m => m.SortOrder).Select(m => new TeacherDto
+                Text = section.Text,
+                Teachers = section.Teachers.OrderBy(m => m.Order).Select(m => new TeacherDto
                 {
                     Id = m.Id,
                     Name = m.Name,
@@ -33,13 +33,10 @@ namespace Service.Services
                     Bio = m.Bio,
                     Photo = m.Photo,
                     PhotoAlt = m.PhotoAlt,
-                    LinkedInUrl = m.LinkedInUrl,
-                    LinkedInAriaLabel = m.LinkedInAriaLabel,
+                    LinkedIn = m.LinkedIn,
                     SocialIcon = m.SocialIcon,
-                    SocialUrl = m.SocialUrl,
-                    SocialAriaLabel = m.SocialAriaLabel,
-                    ButtonText = m.ButtonText,
-                    SortOrder = m.SortOrder
+                    Social = m.Social,
+                    Order = m.Order
                 }).ToList()
             };
         }

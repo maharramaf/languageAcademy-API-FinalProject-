@@ -23,37 +23,17 @@ namespace Service.Services
 
         public async Task<StatsDto?> GetUIAsync()
         {
-            var section = await _statsRepo.GetWithItemsAsync();
+            var section = await _statsRepo.GetLatestAsync();
             if (section is null) return null;
-
-            var courseCount = await _courseRepo.CountAsync();
-            var teacherCount = await _teacherRepo.CountAsync();
-            var studentCount = 0;
 
             return new StatsDto
             {
                 Id = section.Id,
-                Items = section.Items.OrderBy(m => m.SortOrder).Select(m => new StatItemDto
-                {
-                    Id = m.Id,
-                    Icon = m.Icon,
-                    Value = ResolveValue(m.SourceKey, m.StoredValue, studentCount, courseCount, teacherCount),
-                    Suffix = m.Suffix,
-                    Label = m.Label,
-                    SortOrder = m.SortOrder
-                }).ToList()
+                Students = 0,
+                Courses = await _courseRepo.CountAsync(),
+                Teachers = await _teacherRepo.CountAsync(),
+                Years = section.Years
             };
-        }
-
-        private static int ResolveValue(string sourceKey, int storedValue, int studentCount, int courseCount, int teacherCount)
-        {
-            if (string.Equals(sourceKey, "students", StringComparison.OrdinalIgnoreCase))
-                return studentCount;
-            if (string.Equals(sourceKey, "courses", StringComparison.OrdinalIgnoreCase))
-                return courseCount;
-            if (string.Equals(sourceKey, "teachers", StringComparison.OrdinalIgnoreCase))
-                return teacherCount;
-            return storedValue;
         }
     }
 }

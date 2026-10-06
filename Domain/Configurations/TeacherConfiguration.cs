@@ -15,12 +15,9 @@ namespace Domain.Configurations
             builder.Property(m => m.Bio).IsRequired().HasMaxLength(1000);
             builder.Property(m => m.Photo).IsRequired().HasMaxLength(260);
             builder.Property(m => m.PhotoAlt).IsRequired().HasMaxLength(200);
-            builder.Property(m => m.LinkedInUrl).IsRequired().HasMaxLength(260);
-            builder.Property(m => m.LinkedInAriaLabel).IsRequired().HasMaxLength(120);
+            builder.Property(m => m.LinkedIn).IsRequired().HasMaxLength(260);
             builder.Property(m => m.SocialIcon).IsRequired().HasMaxLength(80);
-            builder.Property(m => m.SocialUrl).IsRequired().HasMaxLength(260);
-            builder.Property(m => m.SocialAriaLabel).IsRequired().HasMaxLength(120);
-            builder.Property(m => m.ButtonText).IsRequired().HasMaxLength(80);
+            builder.Property(m => m.Social).IsRequired().HasMaxLength(260);
             builder.Property(m => m.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
             builder.HasOne(m => m.TeacherSection)
                 .WithMany(m => m.Teachers)

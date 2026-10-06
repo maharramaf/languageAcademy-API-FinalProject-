@@ -42,7 +42,7 @@ namespace Repository.Data
                 Image = "images/course-beginner.jpg",
                 Summary = "Start English from zero with guided speaking, everyday vocabulary, and clear grammar you can use the same day.",
                 Overview = "This beginner pathway takes you from first greetings to short everyday conversations. Each module mixes video, reading, and a short quiz.",
-                PreviewVideoUrl = Embed("v1ZWFsz0V5U"),
+                Video = Embed("v1ZWFsz0V5U"),
                 Outcomes = Outcomes(
                     "Introduce yourself in English",
                     "Understand basic conversations",
@@ -83,7 +83,7 @@ namespace Repository.Data
                 Image = "images/course-intermediate.jpg",
                 Summary = "Move from careful sentences to fluent discussion. You will practice opinion, story, and workplace English.",
                 Overview = "Learners at this level already know the basics. The course pushes accuracy and flow with debates, short writing, and real listening.",
-                PreviewVideoUrl = Embed("h9HvFZUgxiM"),
+                Video = Embed("h9HvFZUgxiM"),
                 Outcomes = Outcomes(
                     "Hold a five-minute opinion conversation",
                     "Use linking language in stories and emails",
@@ -114,7 +114,7 @@ namespace Repository.Data
                 Image = "images/course-ielts.jpg",
                 Summary = "Train for the Academic IELTS with timed tasks, score-focused feedback, and strategies for each paper.",
                 Overview = "You will practice Listening, Reading, Writing, and Speaking every week.",
-                PreviewVideoUrl = Embed("2SI0twnNEN8"),
+                Video = Embed("2SI0twnNEN8"),
                 Outcomes = Outcomes(
                     "Plan Task 1 and Task 2 under time pressure",
                     "Build speaking answers for all three parts",
@@ -145,7 +145,7 @@ namespace Repository.Data
                 Image = "images/course-business.jpg",
                 Summary = "Sound clear and credible in meetings, presentations, and professional email.",
                 Overview = "The course uses realistic workplace scenarios: project updates, negotiations, and client calls.",
-                PreviewVideoUrl = Embed("m2UD0-IC7iY"),
+                Video = Embed("m2UD0-IC7iY"),
                 Outcomes = Outcomes(
                     "Lead a short meeting",
                     "Write concise professional email",
@@ -176,7 +176,7 @@ namespace Repository.Data
                 Image = "images/course-german.jpg",
                 Summary = "Start German with practical dialogues, clear grammar, and pronunciation you can trust.",
                 Overview = "A1-focused classes cover sounds, cases in context, and the situations new arrivals need first.",
-                PreviewVideoUrl = Embed("wpBPaDI5IgI"),
+                Video = Embed("wpBPaDI5IgI"),
                 Outcomes = Outcomes(
                     "Introduce yourself in German",
                     "Order, ask, and understand simple replies",
@@ -206,7 +206,7 @@ namespace Repository.Data
                 Image = "images/course-spanish.jpg",
                 Summary = "Learn Spanish you can speak from the first class, with culture notes woven into every topic.",
                 Overview = "Lessons balance conversation and grammar.",
-                PreviewVideoUrl = Embed("J7frbFRIvoc"),
+                Video = Embed("J7frbFRIvoc"),
                 Outcomes = Outcomes(
                     "Talk about yourself, family, and plans",
                     "Use present tense and gustar naturally",
@@ -237,7 +237,7 @@ namespace Repository.Data
                 Image = "images/course-french.jpg",
                 Summary = "A friendly start in French, with pronunciation coaching and conversations for travel and study.",
                 Overview = "You will get comfortable with sounds that feel new, then use them in café, travel, and classroom situations.",
-                PreviewVideoUrl = Embed("vvidJedEQgY"),
+                Video = Embed("vvidJedEQgY"),
                 Outcomes = Outcomes(
                     "Pronounce French rhythms with more confidence",
                     "Introduce yourself and ask simple questions",
@@ -268,7 +268,7 @@ namespace Repository.Data
                 Image = "images/course-conversation.jpg",
                 Summary = "A speaking-first workshop for learners who understand more than they say.",
                 Overview = "Each session is built around a topic, useful chunks, and feedback on clarity.",
-                PreviewVideoUrl = Embed("eIho2S0ZahI"),
+                Video = Embed("eIho2S0ZahI"),
                 Outcomes = Outcomes(
                     "Speak for longer turns",
                     "Ask follow-up questions",
@@ -291,7 +291,7 @@ namespace Repository.Data
             return texts.Select((text, index) => new CourseOutcome
             {
                 Text = text,
-                SortOrder = index + 1
+                Order = index + 1
             }).ToList();
         }
 
@@ -300,8 +300,8 @@ namespace Repository.Data
             return new CourseModule
             {
                 Title = title,
-                Meta = meta,
-                SortOrder = order,
+                Info = meta,
+                Order = order,
                 Lessons = lessons
             };
         }
@@ -312,9 +312,9 @@ namespace Repository.Data
             {
                 Title = title,
                 Kind = kind,
-                VideoUrl = videoUrl,
-                DurationSeconds = duration,
-                SortOrder = order
+                Video = videoUrl,
+                Seconds = duration,
+                Order = order
             };
         }
     }

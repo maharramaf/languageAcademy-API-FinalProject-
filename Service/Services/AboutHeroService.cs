@@ -26,9 +26,9 @@ namespace Service.Services
             return new AboutHeroDto
             {
                 Id = section.Id,
-                Eyebrow = section.Eyebrow,
+                Subtitle = section.Subtitle,
                 Title = section.Title,
-                Lead = section.Lead
+                Text = section.Text
             };
         }
     }

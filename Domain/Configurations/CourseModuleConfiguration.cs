@@ -14,7 +14,7 @@ namespace Domain.Configurations
         public void Configure(EntityTypeBuilder<CourseModule> builder)
         {
             builder.Property(m => m.Title).IsRequired().HasMaxLength(160);
-            builder.Property(m => m.Meta).HasMaxLength(80);
+            builder.Property(m => m.Info).IsRequired().HasMaxLength(80);
             builder.Property(m => m.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
             builder.HasOne(m => m.Course)
                 .WithMany(m => m.Modules)

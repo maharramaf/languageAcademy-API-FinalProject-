@@ -25,15 +25,15 @@ namespace Service.Services
             return new HowWeWorkDto
             {
                 Id = section.Id,
-                Eyebrow = section.Eyebrow,
+                Subtitle = section.Subtitle,
                 Title = section.Title,
-                Cards = section.Cards.OrderBy(m => m.SortOrder).Select(m => new HowWeWorkCardDto
+                Cards = section.Cards.OrderBy(m => m.Order).Select(m => new HowWeWorkCardDto
                 {
                     Id = m.Id,
                     Icon = m.Icon,
                     Title = m.Title,
                     Text = m.Text,
-                    SortOrder = m.SortOrder
+                    Order = m.Order
                 }).ToList()
             };
         }

@@ -11,9 +11,9 @@ namespace Repository.Data
 
             context.AboutHeroes.Add(new AboutHero
             {
-                Eyebrow = "Our story",
+                Subtitle = "Our story",
                 Title = "About MF Language Academy",
-                Lead = "MF Language Academy started as an evening English circle and grew into a full language school for adults who need results, not endless textbooks."
+                Text = "MF Language Academy started as an evening English circle and grew into a full language school for adults who need results, not endless textbooks."
             });
 
             await context.SaveChangesAsync();

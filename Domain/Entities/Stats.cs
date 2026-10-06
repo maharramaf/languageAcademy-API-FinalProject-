@@ -5,6 +5,6 @@ namespace Domain.Entities
 {
     public class Stats : BaseEntity
     {
-        public ICollection<StatItem> Items { get; set; } = new List<StatItem>();
+        public int Years { get; set; }
     }
 }

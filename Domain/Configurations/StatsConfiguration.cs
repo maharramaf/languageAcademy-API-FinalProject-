@@ -9,6 +9,7 @@ namespace Domain.Configurations
     {
         public void Configure(EntityTypeBuilder<Stats> builder)
         {
+            builder.Property(m => m.Years).IsRequired();
             builder.Property(m => m.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
         }
     }

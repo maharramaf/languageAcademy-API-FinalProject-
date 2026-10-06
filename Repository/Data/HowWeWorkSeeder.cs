@@ -11,7 +11,7 @@ namespace Repository.Data
 
             context.HowWeWorks.Add(new HowWeWork
             {
-                Eyebrow = "How we work",
+                Subtitle = "How we work",
                 Title = "Mission, classrooms, and care",
                 Cards = new List<HowWeWorkCard>
                 {
@@ -28,7 +28,7 @@ namespace Repository.Data
         {
             return new HowWeWorkCard
             {
-                SortOrder = sortOrder,
+                Order = sortOrder,
                 Icon = icon,
                 Title = title,
                 Text = text
