@@ -24,6 +24,8 @@ namespace Repository.Data
         public DbSet<Review> Reviews { get; set; }
         public DbSet<NewsletterSection> NewsletterSections { get; set; }
         public DbSet<Subscriber> Subscribers { get; set; }
+        public DbSet<ContactSection> ContactSections { get; set; }
+        public DbSet<ContactMessage> ContactMessages { get; set; }
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
         protected override void OnModelCreating(ModelBuilder builder)
         {

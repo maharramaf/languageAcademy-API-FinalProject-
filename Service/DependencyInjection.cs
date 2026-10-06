@@ -23,6 +23,7 @@ namespace Service
             services.AddScoped<IStatsService, StatsService>();
             services.AddScoped<IReviewService, ReviewService>();
             services.AddScoped<INewsletterService, NewsletterService>();
+            services.AddScoped<IContactService, ContactService>();
             return services;
         }
     }
