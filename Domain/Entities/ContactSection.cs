@@ -14,5 +14,6 @@ namespace Domain.Entities
         public string Email { get; set; } = string.Empty;
         public string Hours { get; set; } = string.Empty;
         public string Saturday { get; set; } = string.Empty;
+        public string Map { get; set; } = string.Empty;
     }
 }

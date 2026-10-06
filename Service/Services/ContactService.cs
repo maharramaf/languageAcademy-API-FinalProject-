@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Domain.Common;
 using Domain.Entities;
 using Repository.Repositories.Interfaces;
 using Service.Helpers.DTOs.Contacts;
@@ -34,7 +35,8 @@ namespace Service.Services
                 Phone = section.Phone,
                 Email = section.Email,
                 Hours = section.Hours,
-                Saturday = section.Saturday
+                Saturday = section.Saturday,
+                Map = MapEmbed.Normalize(section.Map)
             };
         }
 

@@ -18,6 +18,7 @@ namespace Domain.Configurations
             builder.Property(m => m.Email).IsRequired().HasMaxLength(254);
             builder.Property(m => m.Hours).IsRequired().HasMaxLength(80);
             builder.Property(m => m.Saturday).IsRequired().HasMaxLength(80);
+            builder.Property(m => m.Map).IsRequired().HasMaxLength(2000);
             builder.Property(m => m.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
         }
     }
