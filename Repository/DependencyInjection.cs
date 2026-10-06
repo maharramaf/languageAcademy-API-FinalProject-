@@ -33,6 +33,7 @@ namespace Repository
             services.AddScoped<ISubscriberRepository, SubscriberRepository>();
             services.AddScoped<IContactSectionRepository, ContactSectionRepository>();
             services.AddScoped<IContactMessageRepository, ContactMessageRepository>();
+            services.AddScoped<IStudentSectionRepository, StudentSectionRepository>();
             services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
             return services;
         }

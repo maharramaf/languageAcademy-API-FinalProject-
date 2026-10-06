@@ -67,6 +67,7 @@ namespace Service.Services
                     Rating = m.Rating,
                     Photo = m.Photo,
                     PhotoAlt = m.PhotoAlt,
+                    Result = m.Result,
                     Course = course.Title,
                     CourseSlug = course.Slug
                 }).ToList(),

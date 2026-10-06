@@ -15,6 +15,7 @@ namespace Domain.Configurations
             builder.ToTable(t => t.HasCheckConstraint("CK_Reviews_Rating", "[Rating] >= 1 AND [Rating] <= 5"));
             builder.Property(m => m.Photo).IsRequired().HasMaxLength(260);
             builder.Property(m => m.PhotoAlt).IsRequired().HasMaxLength(200);
+            builder.Property(m => m.Result).IsRequired().HasMaxLength(80);
             builder.Property(m => m.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
             builder.HasIndex(m => new { m.Approved, m.Home, m.Order });
             builder.HasOne(m => m.Course)

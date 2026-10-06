@@ -24,6 +24,7 @@ namespace Service
             services.AddScoped<IReviewService, ReviewService>();
             services.AddScoped<INewsletterService, NewsletterService>();
             services.AddScoped<IContactService, ContactService>();
+            services.AddScoped<IStudentService, StudentService>();
             return services;
         }
     }

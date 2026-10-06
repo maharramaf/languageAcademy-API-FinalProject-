@@ -12,6 +12,7 @@ namespace Domain.Entities
         public int Rating { get; set; }
         public string Photo { get; set; } = string.Empty;
         public string PhotoAlt { get; set; } = string.Empty;
+        public string Result { get; set; } = string.Empty;
         public bool Home { get; set; }
         public bool Approved { get; set; } = true;
         public int Order { get; set; }

@@ -37,6 +37,7 @@ using (var scope = app.Services.CreateScope())
     await ReviewSeeder.SeedAsync(db);
     await NewsletterSeeder.SeedAsync(db);
     await ContactSeeder.SeedAsync(db);
+    await StudentSeeder.SeedAsync(db);
 }
 
 if (app.Environment.IsDevelopment())

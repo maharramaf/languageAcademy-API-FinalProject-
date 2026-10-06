@@ -18,5 +18,15 @@ namespace Repository.Repositories
                 .OrderBy(m => m.Order)
                 .ToListAsync();
         }
+
+        public async Task<IReadOnlyList<Review>> GetApprovedAsync()
+        {
+            return await _dbSet.AsNoTracking()
+                .Include(m => m.Course)
+                .Where(m => m.Approved)
+                .OrderBy(m => m.Order)
+                .ThenByDescending(m => m.CreatedAt)
+                .ToListAsync();
+        }
     }
 }

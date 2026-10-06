@@ -25,22 +25,22 @@ namespace Repository.Data
             context.Reviews.AddRange(
                 Item(ielts.Id, 1, 5, "Amira Hassan",
                     "The IELTS speaking labs were the first place I stopped memorizing answers. I left with a 7.5 and a calmer exam day.",
-                    "images/student-amira.jpg", "Portrait of Amira Hassan"),
+                    "images/student-amira.jpg", "Portrait of Amira Hassan", "IELTS band 7.5"),
                 Item(business.Id, 2, 5, "Luca Bianchi",
                     "Business English gave me phrases I use in stand-ups every morning. The group was small enough to actually practice.",
-                    "images/student-luca.jpg", "Portrait of Luca Bianchi"),
+                    "images/student-luca.jpg", "Portrait of Luca Bianchi", "Completed in 8 weeks"),
                 Item(spanish.Id, 3, 4, "Priya Shah",
                     "I wanted Spanish for a family trip. By week six I could order, ask for directions, and understand the replies.",
-                    "images/student-priya.jpg", "Portrait of Priya Shah"),
+                    "images/student-priya.jpg", "Portrait of Priya Shah", "Beginner certificate"),
                 Item(german.Id, 4, 5, "Noah Keller",
                     "German finally clicked because Markus taught grammar inside real dialogues. I use it at the bakery near my office.",
-                    "images/student-noah.jpg", "Portrait of Noah Keller")
+                    "images/student-noah.jpg", "Portrait of Noah Keller", "A1 speaking check")
             );
 
             await context.SaveChangesAsync();
         }
 
-        private static Review Item(int courseId, int order, int rating, string name, string text, string photo, string photoAlt)
+        private static Review Item(int courseId, int order, int rating, string name, string text, string photo, string photoAlt, string result)
         {
             return new Review
             {
@@ -51,6 +51,7 @@ namespace Repository.Data
                 Text = text,
                 Photo = photo,
                 PhotoAlt = photoAlt,
+                Result = result,
                 Home = true,
                 Approved = true
             };
