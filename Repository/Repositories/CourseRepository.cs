@@ -31,5 +31,10 @@ namespace Repository.Repositories
                     .ThenInclude(m => m.Lessons)
                 .FirstOrDefaultAsync(m => m.Slug == slug);
         }
+
+        public Task<int> CountAsync()
+        {
+            return _dbSet.CountAsync();
+        }
     }
 }

@@ -11,5 +11,6 @@ namespace Repository.Repositories.Interfaces
     {
         Task<IEnumerable<Course>> GetAllWithModulesAsync();
         Task<Course?> GetBySlugAsync(string slug);
+        Task<int> CountAsync();
     }
 }

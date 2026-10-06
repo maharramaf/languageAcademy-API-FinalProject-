@@ -20,6 +20,7 @@ namespace Service
             services.AddScoped<IHowWeWorkService, HowWeWorkService>();
             services.AddScoped<IAboutHeroService, AboutHeroService>();
             services.AddScoped<ITeacherService, TeacherService>();
+            services.AddScoped<IStatsService, StatsService>();
             return services;
         }
     }
