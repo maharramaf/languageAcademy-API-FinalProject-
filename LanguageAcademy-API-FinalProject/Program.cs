@@ -32,6 +32,7 @@ using (var scope = app.Services.CreateScope())
     await WhyChooseSeeder.SeedAsync(db);
     await HowWeWorkSeeder.SeedAsync(db);
     await AboutHeroSeeder.SeedAsync(db);
+    await TeacherSeeder.SeedAsync(db);
 }
 
 if (app.Environment.IsDevelopment())

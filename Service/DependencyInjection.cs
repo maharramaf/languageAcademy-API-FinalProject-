@@ -19,6 +19,7 @@ namespace Service
             services.AddScoped<IWhyChooseService, WhyChooseService>();
             services.AddScoped<IHowWeWorkService, HowWeWorkService>();
             services.AddScoped<IAboutHeroService, AboutHeroService>();
+            services.AddScoped<ITeacherService, TeacherService>();
             return services;
         }
     }
