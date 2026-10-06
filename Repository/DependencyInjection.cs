@@ -29,6 +29,8 @@ namespace Repository
             services.AddScoped<IStatsRepository, StatsRepository>();
             services.AddScoped<IReviewSectionRepository, ReviewSectionRepository>();
             services.AddScoped<IReviewRepository, ReviewRepository>();
+            services.AddScoped<INewsletterSectionRepository, NewsletterSectionRepository>();
+            services.AddScoped<ISubscriberRepository, SubscriberRepository>();
             services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
             return services;
         }
