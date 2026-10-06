@@ -29,6 +29,7 @@ namespace Repository.Repositories
                 .Include(m => m.Outcomes)
                 .Include(m => m.Modules)
                     .ThenInclude(m => m.Lessons)
+                .Include(m => m.Reviews)
                 .FirstOrDefaultAsync(m => m.Slug == slug);
         }
 

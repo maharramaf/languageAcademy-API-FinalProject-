@@ -20,6 +20,8 @@ namespace Repository.Data
         public DbSet<TeacherSection> TeacherSections { get; set; }
         public DbSet<Teacher> Teachers { get; set; }
         public DbSet<Stats> Stats { get; set; }
+        public DbSet<ReviewSection> ReviewSections { get; set; }
+        public DbSet<Review> Reviews { get; set; }
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
         protected override void OnModelCreating(ModelBuilder builder)
         {

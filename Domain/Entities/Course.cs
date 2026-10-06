@@ -22,5 +22,6 @@ namespace Domain.Entities
         public string? Video { get; set; }
         public ICollection<CourseModule> Modules { get; set; } = new List<CourseModule>();
         public ICollection<CourseOutcome> Outcomes { get; set; } = new List<CourseOutcome>();
+        public ICollection<Review> Reviews { get; set; } = new List<Review>();
     }
 }

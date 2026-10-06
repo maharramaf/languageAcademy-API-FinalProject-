@@ -21,6 +21,7 @@ namespace Service
             services.AddScoped<IAboutHeroService, AboutHeroService>();
             services.AddScoped<ITeacherService, TeacherService>();
             services.AddScoped<IStatsService, StatsService>();
+            services.AddScoped<IReviewService, ReviewService>();
             return services;
         }
     }

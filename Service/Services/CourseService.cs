@@ -1,6 +1,7 @@
 using Domain.Entities;
 using Repository.Repositories.Interfaces;
 using Service.Helpers.DTOs.Courses;
+using Service.Helpers.DTOs.Reviews;
 using Service.Services.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -58,6 +59,17 @@ namespace Service.Services
                 Overview = course.Overview,
                 Video = course.Video,
                 Outcomes = course.Outcomes.OrderBy(m => m.Order).Select(m => m.Text).ToList(),
+                Reviews = course.Reviews.Where(m => m.Approved).OrderBy(m => m.Order).ThenByDescending(m => m.CreatedAt).Select(m => new ReviewDto
+                {
+                    Id = m.Id,
+                    Name = m.Name,
+                    Text = m.Text,
+                    Rating = m.Rating,
+                    Photo = m.Photo,
+                    PhotoAlt = m.PhotoAlt,
+                    Course = course.Title,
+                    CourseSlug = course.Slug
+                }).ToList(),
                 Modules = course.Modules.OrderBy(m => m.Order).Select(m => new CourseModuleDto
                 {
                     Id = m.Id,
