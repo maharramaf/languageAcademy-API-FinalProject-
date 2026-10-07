@@ -16,6 +16,16 @@ namespace Repository.Repositories
             await _dbContext.SaveChangesAsync();
         }
 
+        public Task<TeacherApplication?> GetByIdAsync(int id)
+        {
+            return _dbSet.FirstOrDefaultAsync(m => m.Id == id);
+        }
+
+        public Task SaveAsync()
+        {
+            return _dbContext.SaveChangesAsync();
+        }
+
         public Task<bool> HasPendingEmailAsync(string email)
         {
             return _dbSet.AnyAsync(m =>

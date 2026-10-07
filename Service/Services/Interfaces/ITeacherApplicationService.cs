@@ -6,5 +6,7 @@ namespace Service.Services.Interfaces
     {
         Task<TeacherApplicationResultDto> ApplyAsync(TeacherApplicationCreateDto dto);
         Task<IReadOnlyList<TeacherApplicationDto>> GetAllAsync();
+        Task<TeacherApplicationResultDto> AcceptAsync(int id);
+        Task<TeacherApplicationResultDto> RejectAsync(int id);
     }
 }

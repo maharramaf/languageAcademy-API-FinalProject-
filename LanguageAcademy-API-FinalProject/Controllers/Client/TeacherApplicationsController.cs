@@ -36,5 +36,27 @@ namespace LanguageAcademy_API_FinalProject.Controllers.Client
 
             return Ok();
         }
+
+        [HttpPost("{id:int}/accept")]
+        [Authorize(Roles = Roles.Admin + "," + Roles.SuperAdmin)]
+        public async Task<IActionResult> AcceptAsync(int id)
+        {
+            var result = await _service.AcceptAsync(id);
+            if (!result.Succeeded)
+                return BadRequest(new { errors = result.Errors });
+
+            return Ok(new { temporaryPassword = result.TemporaryPassword });
+        }
+
+        [HttpPost("{id:int}/reject")]
+        [Authorize(Roles = Roles.Admin + "," + Roles.SuperAdmin)]
+        public async Task<IActionResult> RejectAsync(int id)
+        {
+            var result = await _service.RejectAsync(id);
+            if (!result.Succeeded)
+                return BadRequest(new { errors = result.Errors });
+
+            return Ok();
+        }
     }
 }

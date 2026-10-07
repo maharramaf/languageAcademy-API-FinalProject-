@@ -1,6 +1,9 @@
 using System.ComponentModel.DataAnnotations;
+using System.Security.Cryptography;
+using Domain.Constants;
 using Domain.Entities;
 using Domain.Enums;
+using Microsoft.AspNetCore.Identity;
 using Repository.Repositories.Interfaces;
 using Service.Helpers.DTOs.TeacherApplications;
 using Service.Services.Interfaces;
@@ -10,10 +13,14 @@ namespace Service.Services
     public class TeacherApplicationService : ITeacherApplicationService
     {
         private readonly ITeacherApplicationRepository _repository;
+        private readonly UserManager<AppUser> _userManager;
 
-        public TeacherApplicationService(ITeacherApplicationRepository repository)
+        public TeacherApplicationService(
+            ITeacherApplicationRepository repository,
+            UserManager<AppUser> userManager)
         {
             _repository = repository;
+            _userManager = userManager;
         }
 
         public async Task<TeacherApplicationResultDto> ApplyAsync(TeacherApplicationCreateDto dto)
@@ -69,6 +76,83 @@ namespace Service.Services
                 Status = m.Status.ToString(),
                 CreatedAt = m.CreatedAt
             }).ToList();
+        }
+
+        public async Task<TeacherApplicationResultDto> AcceptAsync(int id)
+        {
+            var application = await _repository.GetByIdAsync(id);
+            if (application is null)
+                return Fail(new List<string> { "Application was not found." });
+            if (application.Status != TeacherApplicationStatus.Pending)
+                return Fail(new List<string> { "Only a pending application can be accepted." });
+
+            var user = await _userManager.FindByEmailAsync(application.Email);
+            string? temporaryPassword = null;
+            var createdUser = false;
+
+            if (user is null)
+            {
+                temporaryPassword = NewTeacherPassword();
+                user = new AppUser
+                {
+                    Name = application.Name,
+                    Surname = application.Surname,
+                    Email = application.Email,
+                    UserName = application.Email,
+                    PhoneNumber = application.Phone,
+                    EmailConfirmed = true
+                };
+
+                var created = await _userManager.CreateAsync(user, temporaryPassword);
+                if (!created.Succeeded)
+                    return Fail(created.Errors.Select(e => e.Description).ToList());
+
+                createdUser = true;
+            }
+            else
+            {
+                var current = await _userManager.GetRolesAsync(user);
+                if (current.Contains(Roles.Admin) || current.Contains(Roles.SuperAdmin))
+                    return Fail(new List<string> { "This email already belongs to an admin account." });
+            }
+
+            if (!await _userManager.IsInRoleAsync(user, Roles.Teacher))
+            {
+                var role = await _userManager.AddToRoleAsync(user, Roles.Teacher);
+                if (!role.Succeeded)
+                {
+                    if (createdUser)
+                        await _userManager.DeleteAsync(user);
+                    return Fail(role.Errors.Select(e => e.Description).ToList());
+                }
+            }
+
+            application.Status = TeacherApplicationStatus.Approved;
+            await _repository.SaveAsync();
+
+            return new TeacherApplicationResultDto
+            {
+                Succeeded = true,
+                TemporaryPassword = temporaryPassword
+            };
+        }
+
+        public async Task<TeacherApplicationResultDto> RejectAsync(int id)
+        {
+            var application = await _repository.GetByIdAsync(id);
+            if (application is null)
+                return Fail(new List<string> { "Application was not found." });
+            if (application.Status != TeacherApplicationStatus.Pending)
+                return Fail(new List<string> { "Only a pending application can be rejected." });
+
+            application.Status = TeacherApplicationStatus.Rejected;
+            await _repository.SaveAsync();
+            return new TeacherApplicationResultDto { Succeeded = true };
+        }
+
+        private static string NewTeacherPassword()
+        {
+            return "Tt-" + Convert.ToHexString(RandomNumberGenerator.GetBytes(4)) + "!1a";
         }
 
         private static TeacherApplicationResultDto Fail(List<string> errors)
