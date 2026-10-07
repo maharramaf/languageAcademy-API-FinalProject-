@@ -34,5 +34,24 @@ namespace LanguageAcademy_API_FinalProject.Controllers.Client
                 result.Role
             });
         }
+
+        [HttpPost("login")]
+        public async Task<IActionResult> LoginAsync([FromBody] LoginDto? dto)
+        {
+            if (dto is null) return BadRequest();
+
+            var result = await _accountService.LoginAsync(dto);
+            if (!result.Succeeded)
+                return Unauthorized(new { errors = result.Errors });
+
+            return Ok(new
+            {
+                result.Token,
+                result.Email,
+                result.Name,
+                result.Surname,
+                result.Role
+            });
+        }
     }
 }

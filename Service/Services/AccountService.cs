@@ -1,8 +1,13 @@
 using System.ComponentModel.DataAnnotations;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 using System.Text.RegularExpressions;
 using Domain.Constants;
 using Domain.Entities;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 using Service.Helpers.DTOs.Accounts;
 using Service.Services.Interfaces;
 
@@ -11,11 +16,15 @@ namespace Service.Services
 {
     public class AccountService : IAccountService
     {
-        private readonly UserManager<AppUser> _userManager;
+        private const string LoginFailed = "Email or password is incorrect.";
 
-        public AccountService(UserManager<AppUser> userManager)
+        private readonly UserManager<AppUser> _userManager;
+        private readonly IConfiguration _configuration;
+
+        public AccountService(UserManager<AppUser> userManager, IConfiguration configuration)
         {
             _userManager = userManager;
+            _configuration = configuration;
         }
 
         public async Task<RegisterResultDto> RegisterStudentAsync(RegisterDto dto)
@@ -59,6 +68,77 @@ namespace Service.Services
             };
         }
 
+        public async Task<LoginResultDto> LoginAsync(LoginDto dto)
+        {
+            var email = (dto.Email ?? string.Empty).Trim();
+            var password = dto.Password ?? string.Empty;
+
+            if (email.Length is 0 or > 254 || !new EmailAddressAttribute().IsValid(email) || string.IsNullOrEmpty(password))
+                return LoginFail(LoginFailed);
+
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user is null)
+                return LoginFail(LoginFailed);
+
+            if (await _userManager.IsLockedOutAsync(user))
+                return LoginFail(LoginFailed);
+
+            if (!await _userManager.CheckPasswordAsync(user, password))
+            {
+                await _userManager.AccessFailedAsync(user);
+                return LoginFail(LoginFailed);
+            }
+
+            await _userManager.ResetAccessFailedCountAsync(user);
+
+            var roles = await _userManager.GetRolesAsync(user);
+            var role = roles.FirstOrDefault() ?? string.Empty;
+
+            return new LoginResultDto
+            {
+                Succeeded = true,
+                Token = CreateToken(user, roles),
+                Email = user.Email ?? email,
+                Name = user.Name,
+                Surname = user.Surname,
+                Role = role
+            };
+        }
+
+        private string CreateToken(AppUser user, IList<string> roles)
+        {
+            var jwt = _configuration.GetSection("Jwt");
+            var key = jwt["Key"] ?? throw new InvalidOperationException("Jwt:Key is missing.");
+            var hours = int.TryParse(jwt["ExpireHours"], out var parsed) ? parsed : 8;
+
+            var claims = new List<Claim>
+            {
+                new(JwtRegisteredClaimNames.Sub, user.Id),
+                new(JwtRegisteredClaimNames.Email, user.Email ?? string.Empty),
+                new(ClaimTypes.NameIdentifier, user.Id),
+                new(ClaimTypes.Email, user.Email ?? string.Empty),
+                new(ClaimTypes.GivenName, user.Name),
+                new(ClaimTypes.Surname, user.Surname),
+                new(ClaimTypes.Name, $"{user.Name} {user.Surname}".Trim())
+            };
+
+            foreach (var role in roles)
+                claims.Add(new Claim(ClaimTypes.Role, role));
+
+            var signing = new SigningCredentials(
+                new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key)),
+                SecurityAlgorithms.HmacSha256);
+
+            var token = new JwtSecurityToken(
+                issuer: jwt["Issuer"],
+                audience: jwt["Audience"],
+                claims: claims,
+                expires: DateTime.UtcNow.AddHours(hours),
+                signingCredentials: signing);
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
         private static List<string> Validate(RegisterDto dto)
         {
             var errors = new List<string>();
@@ -100,6 +180,15 @@ namespace Service.Services
             {
                 Succeeded = false,
                 Errors = errors.ToList()
+            };
+        }
+
+        private static LoginResultDto LoginFail(string error)
+        {
+            return new LoginResultDto
+            {
+                Succeeded = false,
+                Errors = new[] { error }
             };
         }
     }
