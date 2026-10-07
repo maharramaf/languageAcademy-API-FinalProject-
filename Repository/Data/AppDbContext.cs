@@ -28,6 +28,7 @@ namespace Repository.Data
         public DbSet<ContactSection> ContactSections { get; set; }
         public DbSet<ContactMessage> ContactMessages { get; set; }
         public DbSet<StudentSection> StudentSections { get; set; }
+        public DbSet<TeacherApplication> TeacherApplications { get; set; }
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
         protected override void OnModelCreating(ModelBuilder builder)
         {

@@ -34,6 +34,7 @@ namespace Repository
             services.AddScoped<IContactSectionRepository, ContactSectionRepository>();
             services.AddScoped<IContactMessageRepository, ContactMessageRepository>();
             services.AddScoped<IStudentSectionRepository, StudentSectionRepository>();
+            services.AddScoped<ITeacherApplicationRepository, TeacherApplicationRepository>();
             services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
             return services;
         }
