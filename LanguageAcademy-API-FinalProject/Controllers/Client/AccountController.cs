@@ -1,4 +1,3 @@
-using Domain.Constants;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Service.Helpers.DTOs.Accounts;
@@ -54,13 +53,6 @@ namespace LanguageAcademy_API_FinalProject.Controllers.Client
                 result.Surname,
                 result.Role
             });
-        }
-
-        [HttpGet("students")]
-        [Authorize(Roles = Roles.Admin + "," + Roles.SuperAdmin)]
-        public async Task<IActionResult> GetStudentsAsync()
-        {
-            return Ok(await _accountService.GetStudentsAsync());
         }
     }
 }

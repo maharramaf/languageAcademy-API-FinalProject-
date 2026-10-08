@@ -12,7 +12,9 @@ namespace Repository.Repositories.Interfaces
         Task<IEnumerable<Course>> GetAllWithModulesAsync();
         Task<Course?> GetBySlugAsync(string slug);
         Task<int> CountAsync();
-        Task<bool> SlugExistsAsync(string slug);
+        Task<bool> SlugExistsAsync(string slug, int? exceptId = null);
         Task AddAsync(Course course);
+        Task<Course?> GetByIdAsync(int id);
+        Task SaveAsync();
     }
 }

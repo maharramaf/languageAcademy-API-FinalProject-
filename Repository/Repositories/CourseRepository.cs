@@ -38,15 +38,27 @@ namespace Repository.Repositories
             return _dbSet.CountAsync();
         }
 
-        public Task<bool> SlugExistsAsync(string slug)
+        public Task<bool> SlugExistsAsync(string slug, int? exceptId = null)
         {
-            return _dbSet.AnyAsync(m => m.Slug == slug);
+            return exceptId is null
+                ? _dbSet.AnyAsync(m => m.Slug == slug)
+                : _dbSet.AnyAsync(m => m.Slug == slug && m.Id != exceptId);
         }
 
         public async Task AddAsync(Course course)
         {
             await _dbSet.AddAsync(course);
             await _dbContext.SaveChangesAsync();
+        }
+
+        public Task<Course?> GetByIdAsync(int id)
+        {
+            return _dbSet.FirstOrDefaultAsync(m => m.Id == id);
+        }
+
+        public Task SaveAsync()
+        {
+            return _dbContext.SaveChangesAsync();
         }
     }
 }

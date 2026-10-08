@@ -87,6 +87,27 @@ namespace Service.Services
             };
         }
 
+        public async Task<CourseDetailDto?> GetByIdAsync(int id)
+        {
+            var course = await _courseRepo.GetByIdAsync(id);
+            if (course is null) return null;
+
+            return new CourseDetailDto
+            {
+                Id = course.Id,
+                Slug = course.Slug,
+                Title = course.Title,
+                Type = course.Type.ToString().ToLowerInvariant(),
+                Level = course.Level,
+                Duration = course.Duration,
+                Price = course.Price,
+                Image = course.Image,
+                Summary = course.Summary,
+                Overview = course.Overview,
+                Video = course.Video
+            };
+        }
+
         public async Task<CourseCreateResultDto> CreateAsync(CourseCreateDto dto)
         {
             var errors = Validate(dto);
@@ -120,16 +141,66 @@ namespace Service.Services
             };
         }
 
+        public async Task<CourseCreateResultDto> UpdateAsync(int id, CourseUpdateDto dto)
+        {
+            var errors = Validate(dto.Title, dto.Type, dto.Level, dto.Duration, dto.Price, dto.Image, dto.Summary, dto.Overview);
+            if (errors.Count > 0)
+                return Fail(errors);
+
+            if (!Enum.TryParse<CourseType>(dto.Type.Trim(), true, out var type)
+                || !Enum.IsDefined(type))
+                return Fail("Course type must be Demo, Standard, or Premium.");
+
+            var course = await _courseRepo.GetByIdAsync(id);
+            if (course is null)
+                return Fail("Course was not found.");
+
+            var title = dto.Title.Trim();
+            if (!string.Equals(course.Title, title, StringComparison.Ordinal))
+                course.Slug = await UniqueSlugAsync(Slugify(title), course.Id);
+            course.Title = title;
+            course.Type = type;
+            course.Level = dto.Level.Trim();
+            course.Duration = dto.Duration.Trim();
+            course.Price = dto.Price;
+            if (!string.IsNullOrWhiteSpace(dto.Image))
+                course.Image = dto.Image.Trim();
+            course.Summary = dto.Summary.Trim();
+            course.Overview = dto.Overview.Trim();
+
+            await _courseRepo.SaveAsync();
+
+            return new CourseCreateResultDto
+            {
+                Succeeded = true,
+                Slug = course.Slug,
+                Title = course.Title
+            };
+        }
+
         private static List<string> Validate(CourseCreateDto dto)
         {
+            return Validate(dto.Title, dto.Type, dto.Level, dto.Duration, dto.Price, dto.Image, dto.Summary, dto.Overview);
+        }
+
+        private static List<string> Validate(
+            string? title,
+            string? type,
+            string? level,
+            string? duration,
+            decimal price,
+            string? image,
+            string? summary,
+            string? overview)
+        {
             var errors = new List<string>();
-            var title = (dto.Title ?? string.Empty).Trim();
-            var type = (dto.Type ?? string.Empty).Trim();
-            var level = (dto.Level ?? string.Empty).Trim();
-            var duration = (dto.Duration ?? string.Empty).Trim();
-            var image = (dto.Image ?? string.Empty).Trim();
-            var summary = (dto.Summary ?? string.Empty).Trim();
-            var overview = (dto.Overview ?? string.Empty).Trim();
+            title = (title ?? string.Empty).Trim();
+            type = (type ?? string.Empty).Trim();
+            level = (level ?? string.Empty).Trim();
+            duration = (duration ?? string.Empty).Trim();
+            image = (image ?? string.Empty).Trim();
+            summary = (summary ?? string.Empty).Trim();
+            overview = (overview ?? string.Empty).Trim();
 
             if (title.Length is 0 or > 160)
                 errors.Add("Title is required.");
@@ -139,7 +210,7 @@ namespace Service.Services
                 errors.Add("Level is required.");
             if (duration.Length is 0 or > 40)
                 errors.Add("Duration is required.");
-            if (dto.Price < 0)
+            if (price < 0)
                 errors.Add("Price cannot be negative.");
             if (image.Length > 260)
                 errors.Add("Image path is too long.");
@@ -151,9 +222,9 @@ namespace Service.Services
             return errors;
         }
 
-        private async Task<string> UniqueSlugAsync(string slug)
+        private async Task<string> UniqueSlugAsync(string slug, int? exceptId = null)
         {
-            if (!await _courseRepo.SlugExistsAsync(slug))
+            if (!await _courseRepo.SlugExistsAsync(slug, exceptId))
                 return slug;
 
             for (var i = 2; i < 1000; i++)
@@ -161,7 +232,7 @@ namespace Service.Services
                 var candidate = slug.Length + i.ToString().Length + 1 > 80
                     ? slug[..Math.Max(1, 80 - i.ToString().Length - 1)] + "-" + i
                     : slug + "-" + i;
-                if (!await _courseRepo.SlugExistsAsync(candidate))
+                if (!await _courseRepo.SlugExistsAsync(candidate, exceptId))
                     return candidate;
             }
 
