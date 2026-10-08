@@ -1,13 +1,10 @@
+using System.Text;
 using Domain.Entities;
+using Domain.Enums;
 using Repository.Repositories.Interfaces;
 using Service.Helpers.DTOs.Courses;
 using Service.Helpers.DTOs.Reviews;
 using Service.Services.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Service.Services
 {
@@ -87,6 +84,125 @@ namespace Service.Services
                         Order = x.Order
                     }).ToList()
                 }).ToList()
+            };
+        }
+
+        public async Task<CourseCreateResultDto> CreateAsync(CourseCreateDto dto)
+        {
+            var errors = Validate(dto);
+            if (errors.Count > 0)
+                return Fail(errors);
+
+            if (!Enum.TryParse<CourseType>(dto.Type.Trim(), true, out var type)
+                || !Enum.IsDefined(type))
+                return Fail("Course type must be Demo, Standard, or Premium.");
+
+            var slug = await UniqueSlugAsync(Slugify(dto.Title));
+            await _courseRepo.AddAsync(new Course
+            {
+                Slug = slug,
+                Title = dto.Title.Trim(),
+                Type = type,
+                Level = dto.Level.Trim(),
+                Duration = dto.Duration.Trim(),
+                Price = dto.Price,
+                Image = (dto.Image ?? string.Empty).Trim(),
+                Summary = dto.Summary.Trim(),
+                Overview = dto.Overview.Trim(),
+                Video = string.IsNullOrWhiteSpace(dto.Video) ? null : dto.Video.Trim()
+            });
+
+            return new CourseCreateResultDto
+            {
+                Succeeded = true,
+                Slug = slug,
+                Title = dto.Title.Trim()
+            };
+        }
+
+        private static List<string> Validate(CourseCreateDto dto)
+        {
+            var errors = new List<string>();
+            var title = (dto.Title ?? string.Empty).Trim();
+            var type = (dto.Type ?? string.Empty).Trim();
+            var level = (dto.Level ?? string.Empty).Trim();
+            var duration = (dto.Duration ?? string.Empty).Trim();
+            var image = (dto.Image ?? string.Empty).Trim();
+            var summary = (dto.Summary ?? string.Empty).Trim();
+            var overview = (dto.Overview ?? string.Empty).Trim();
+
+            if (title.Length is 0 or > 160)
+                errors.Add("Title is required.");
+            if (type.Length == 0)
+                errors.Add("Course type is required.");
+            if (level.Length is 0 or > 60)
+                errors.Add("Level is required.");
+            if (duration.Length is 0 or > 40)
+                errors.Add("Duration is required.");
+            if (dto.Price < 0)
+                errors.Add("Price cannot be negative.");
+            if (image.Length > 260)
+                errors.Add("Image path is too long.");
+            if (summary.Length is 0 or > 500)
+                errors.Add("Summary is required.");
+            if (overview.Length is 0 or > 2000)
+                errors.Add("Overview is required.");
+
+            return errors;
+        }
+
+        private async Task<string> UniqueSlugAsync(string slug)
+        {
+            if (!await _courseRepo.SlugExistsAsync(slug))
+                return slug;
+
+            for (var i = 2; i < 1000; i++)
+            {
+                var candidate = slug.Length + i.ToString().Length + 1 > 80
+                    ? slug[..Math.Max(1, 80 - i.ToString().Length - 1)] + "-" + i
+                    : slug + "-" + i;
+                if (!await _courseRepo.SlugExistsAsync(candidate))
+                    return candidate;
+            }
+
+            return slug + "-" + Guid.NewGuid().ToString("N")[..8];
+        }
+
+        private static string Slugify(string title)
+        {
+            var source = title.Trim().ToLowerInvariant();
+            var builder = new StringBuilder();
+            var dash = false;
+
+            foreach (var c in source)
+            {
+                if (char.IsLetterOrDigit(c))
+                {
+                    builder.Append(c);
+                    dash = false;
+                }
+                else if (builder.Length > 0 && !dash)
+                {
+                    builder.Append('-');
+                    dash = true;
+                }
+            }
+
+            var slug = builder.ToString().Trim('-');
+            if (slug.Length > 80)
+                slug = slug[..80].Trim('-');
+
+            return string.IsNullOrEmpty(slug) ? "course" : slug;
+        }
+
+        private static CourseCreateResultDto Fail(string error) => Fail(new[] { error });
+
+        private static CourseCreateResultDto Fail(IEnumerable<string> errors)
+        {
+            return new CourseCreateResultDto
+            {
+                Succeeded = false,
+                Errors = errors.ToList()
             };
         }
     }

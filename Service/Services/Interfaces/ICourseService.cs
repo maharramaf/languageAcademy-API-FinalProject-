@@ -11,5 +11,6 @@ namespace Service.Services.Interfaces
     {
         Task<IEnumerable<CourseDto>> GetAllUIAsync();
         Task<CourseDetailDto?> GetUIAsync(string slug);
+        Task<CourseCreateResultDto> CreateAsync(CourseCreateDto dto);
     }
 }

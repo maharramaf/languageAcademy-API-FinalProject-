@@ -37,5 +37,16 @@ namespace Repository.Repositories
         {
             return _dbSet.CountAsync();
         }
+
+        public Task<bool> SlugExistsAsync(string slug)
+        {
+            return _dbSet.AnyAsync(m => m.Slug == slug);
+        }
+
+        public async Task AddAsync(Course course)
+        {
+            await _dbSet.AddAsync(course);
+            await _dbContext.SaveChangesAsync();
+        }
     }
 }
