@@ -105,6 +105,31 @@ namespace Service.Services
             };
         }
 
+        public async Task<List<StudentAccountDto>> GetStudentsAsync()
+        {
+            var users = await _userManager.GetUsersInRoleAsync(Roles.Student);
+            var items = new List<StudentAccountDto>();
+
+            foreach (var user in users.OrderByDescending(u => u.CreatedAt))
+            {
+                var roles = await _userManager.GetRolesAsync(user);
+                if (roles.Contains(Roles.Teacher) || roles.Contains(Roles.Admin) || roles.Contains(Roles.SuperAdmin))
+                    continue;
+
+                items.Add(new StudentAccountDto
+                {
+                    Id = user.Id,
+                    Name = user.Name,
+                    Surname = user.Surname,
+                    Email = user.Email ?? string.Empty,
+                    Phone = user.PhoneNumber ?? string.Empty,
+                    CreatedAt = user.CreatedAt
+                });
+            }
+
+            return items;
+        }
+
         private string CreateToken(AppUser user, IList<string> roles)
         {
             var jwt = _configuration.GetSection("Jwt");

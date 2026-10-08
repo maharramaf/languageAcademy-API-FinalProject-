@@ -7,5 +7,6 @@ namespace Service.Services.Interfaces
     {
         Task<RegisterResultDto> RegisterStudentAsync(RegisterDto dto);
         Task<LoginResultDto> LoginAsync(LoginDto dto);
+        Task<List<StudentAccountDto>> GetStudentsAsync();
     }
 }
