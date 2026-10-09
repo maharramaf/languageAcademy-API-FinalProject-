@@ -23,7 +23,12 @@ namespace Domain.Configurations
             builder.Property(m => m.Summary).HasMaxLength(500);
             builder.Property(m => m.Overview).HasMaxLength(2000);
             builder.Property(m => m.Video).HasMaxLength(500);
+            builder.Property(m => m.TeacherId).HasMaxLength(450);
             builder.Property(m => m.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
+            builder.HasOne(m => m.Teacher)
+                .WithMany()
+                .HasForeignKey(m => m.TeacherId)
+                .OnDelete(DeleteBehavior.SetNull);
         }
     }
 }

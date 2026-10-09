@@ -64,6 +64,16 @@ namespace Repository.Repositories
                 .FirstOrDefaultAsync(m => m.Id == id);
         }
 
+        public async Task<IEnumerable<Course>> GetByTeacherIdAsync(string teacherId)
+        {
+            return await _dbSet.AsNoTracking()
+                .Include(m => m.Modules)
+                    .ThenInclude(m => m.Lessons)
+                .Where(m => m.TeacherId == teacherId)
+                .OrderByDescending(m => m.CreatedAt)
+                .ToListAsync();
+        }
+
         public Task SaveAsync()
         {
             return _dbContext.SaveChangesAsync();

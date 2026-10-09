@@ -10,5 +10,6 @@ namespace Service.Helpers.DTOs.Courses
         public string? Image { get; set; }
         public string Summary { get; set; } = string.Empty;
         public string Overview { get; set; } = string.Empty;
+        public string? TeacherEmail { get; set; }
     }
 }

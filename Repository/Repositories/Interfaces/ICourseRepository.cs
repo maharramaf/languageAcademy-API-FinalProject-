@@ -16,6 +16,7 @@ namespace Repository.Repositories.Interfaces
         Task AddAsync(Course course);
         Task<Course?> GetByIdAsync(int id);
         Task<Course?> GetByIdWithLessonsAsync(int id);
+        Task<IEnumerable<Course>> GetByTeacherIdAsync(string teacherId);
         Task SaveAsync();
         Task<bool> DeleteAsync(int id);
     }

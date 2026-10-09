@@ -16,6 +16,8 @@ namespace Service.Services.Interfaces
         Task<CourseCreateResultDto> UpdateAsync(int id, CourseUpdateDto dto);
         Task<CourseCreateResultDto> DeleteAsync(int id);
         Task<CourseDetailDto?> GetCurriculumAsync(int id);
+        Task<IEnumerable<CourseDto>> GetByTeacherAsync(string teacherId);
+        Task<bool> TeacherOwnsAsync(int courseId, string teacherId);
         Task<CourseCreateResultDto> CreateModuleAsync(int courseId, CourseModuleCreateDto dto);
         Task<CourseCreateResultDto> CreateLessonAsync(int courseId, int moduleId, LessonCreateDto dto);
         Task<CourseModuleDto?> GetModuleAsync(int courseId, int moduleId);

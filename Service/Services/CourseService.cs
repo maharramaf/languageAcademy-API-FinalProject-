@@ -1,6 +1,8 @@
 using System.Text;
+using Domain.Constants;
 using Domain.Entities;
 using Domain.Enums;
+using Microsoft.AspNetCore.Identity;
 using Repository.Repositories.Interfaces;
 using Service.Helpers.DTOs.Courses;
 using Service.Helpers.DTOs.Reviews;
@@ -13,15 +15,18 @@ namespace Service.Services
         private readonly ICourseRepository _courseRepo;
         private readonly ICourseModuleRepository _moduleRepo;
         private readonly ILessonRepository _lessonRepo;
+        private readonly UserManager<AppUser> _userManager;
 
         public CourseService(
             ICourseRepository courseRepo,
             ICourseModuleRepository moduleRepo,
-            ILessonRepository lessonRepo)
+            ILessonRepository lessonRepo,
+            UserManager<AppUser> userManager)
         {
             _courseRepo = courseRepo;
             _moduleRepo = moduleRepo;
             _lessonRepo = lessonRepo;
+            _userManager = userManager;
         }
 
         public async Task<IEnumerable<CourseDto>> GetAllUIAsync()
@@ -97,7 +102,8 @@ namespace Service.Services
                 Image = course.Image,
                 Summary = course.Summary,
                 Overview = course.Overview,
-                Video = course.Video
+                Video = course.Video,
+                TeacherEmail = await TeacherEmailAsync(course.TeacherId)
             };
         }
 
@@ -161,6 +167,21 @@ namespace Service.Services
             course.Summary = dto.Summary.Trim();
             course.Overview = dto.Overview.Trim();
 
+            if (dto.TeacherEmail is not null)
+            {
+                if (string.IsNullOrWhiteSpace(dto.TeacherEmail))
+                {
+                    course.TeacherId = null;
+                }
+                else
+                {
+                    var teacher = await ResolveTeacherAsync(dto.TeacherEmail);
+                    if (teacher is null)
+                        return Fail("Teacher was not found.");
+                    course.TeacherId = teacher.Id;
+                }
+            }
+
             await _courseRepo.SaveAsync();
 
             return new CourseCreateResultDto
@@ -177,6 +198,37 @@ namespace Service.Services
                 return Fail("Course was not found.");
 
             return new CourseCreateResultDto { Succeeded = true };
+        }
+
+        public async Task<IEnumerable<CourseDto>> GetByTeacherAsync(string teacherId)
+        {
+            if (string.IsNullOrWhiteSpace(teacherId))
+                return Array.Empty<CourseDto>();
+
+            var result = await _courseRepo.GetByTeacherIdAsync(teacherId);
+            return result.Select(m => new CourseDto
+            {
+                Id = m.Id,
+                Slug = m.Slug,
+                Title = m.Title,
+                Type = m.Type.ToString().ToLowerInvariant(),
+                Level = m.Level,
+                Duration = m.Duration,
+                Price = m.Price,
+                Image = m.Image,
+                Summary = m.Summary,
+                LessonCount = m.Modules.Sum(x => x.Lessons.Count),
+                Video = m.Video
+            });
+        }
+
+        public async Task<bool> TeacherOwnsAsync(int courseId, string teacherId)
+        {
+            if (courseId <= 0 || string.IsNullOrWhiteSpace(teacherId))
+                return false;
+
+            var course = await _courseRepo.GetByIdAsync(courseId);
+            return course is not null && course.TeacherId == teacherId;
         }
 
         public async Task<CourseDetailDto?> GetCurriculumAsync(int id)
@@ -474,6 +526,27 @@ namespace Service.Services
                 Seconds = lesson.Seconds,
                 Order = lesson.Order
             };
+        }
+
+        private async Task<string?> TeacherEmailAsync(string? teacherId)
+        {
+            if (string.IsNullOrWhiteSpace(teacherId))
+                return null;
+
+            var user = await _userManager.FindByIdAsync(teacherId);
+            return user?.Email;
+        }
+
+        private async Task<AppUser?> ResolveTeacherAsync(string? email)
+        {
+            if (string.IsNullOrWhiteSpace(email))
+                return null;
+
+            var user = await _userManager.FindByEmailAsync(email.Trim());
+            if (user is null)
+                return null;
+
+            return await _userManager.IsInRoleAsync(user, Roles.Teacher) ? user : null;
         }
 
         private static string Slugify(string title)

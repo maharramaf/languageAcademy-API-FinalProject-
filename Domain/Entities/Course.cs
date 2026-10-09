@@ -20,6 +20,8 @@ namespace Domain.Entities
         public string Summary { get; set; } = string.Empty;
         public string Overview { get; set; } = string.Empty;
         public string? Video { get; set; }
+        public string? TeacherId { get; set; }
+        public AppUser? Teacher { get; set; }
         public ICollection<CourseModule> Modules { get; set; } = new List<CourseModule>();
         public ICollection<CourseOutcome> Outcomes { get; set; } = new List<CourseOutcome>();
         public ICollection<Review> Reviews { get; set; } = new List<Review>();
