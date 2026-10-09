@@ -15,6 +15,7 @@ namespace Repository.Repositories.Interfaces
         Task<bool> SlugExistsAsync(string slug, int? exceptId = null);
         Task AddAsync(Course course);
         Task<Course?> GetByIdAsync(int id);
+        Task<Course?> GetByIdWithLessonsAsync(int id);
         Task SaveAsync();
         Task<bool> DeleteAsync(int id);
     }

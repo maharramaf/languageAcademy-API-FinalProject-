@@ -56,6 +56,14 @@ namespace Repository.Repositories
             return _dbSet.FirstOrDefaultAsync(m => m.Id == id);
         }
 
+        public Task<Course?> GetByIdWithLessonsAsync(int id)
+        {
+            return _dbSet.AsNoTracking()
+                .Include(m => m.Modules)
+                    .ThenInclude(m => m.Lessons)
+                .FirstOrDefaultAsync(m => m.Id == id);
+        }
+
         public Task SaveAsync()
         {
             return _dbContext.SaveChangesAsync();

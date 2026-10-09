@@ -9,5 +9,7 @@ namespace Repository.Repositories.Interfaces
 {
     public interface ILessonRepository : IBaseRepository<Lesson>
     {
+        Task<int> NextOrderAsync(int moduleId);
+        Task AddAsync(Lesson lesson);
     }
 }

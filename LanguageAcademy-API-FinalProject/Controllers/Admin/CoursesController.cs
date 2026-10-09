@@ -67,5 +67,45 @@ namespace LanguageAcademy_API_FinalProject.Controllers.Admin
 
             return Ok();
         }
+
+        [HttpGet("{id:int}/modules")]
+        public async Task<IActionResult> GetModulesAsync(int id)
+        {
+            var course = await _courseService.GetCurriculumAsync(id);
+            if (course is null) return NotFound();
+            return Ok(course);
+        }
+
+        [HttpPost("{id:int}/modules")]
+        public async Task<IActionResult> CreateModuleAsync(int id, [FromBody] CourseModuleCreateDto? dto)
+        {
+            if (dto is null) return BadRequest();
+
+            var result = await _courseService.CreateModuleAsync(id, dto);
+            if (!result.Succeeded)
+            {
+                if (result.Errors.Any(e => e == "Course was not found."))
+                    return NotFound();
+                return BadRequest(new { errors = result.Errors });
+            }
+
+            return Ok(new { result.Title });
+        }
+
+        [HttpPost("{id:int}/modules/{moduleId:int}/lessons")]
+        public async Task<IActionResult> CreateLessonAsync(int id, int moduleId, [FromBody] LessonCreateDto? dto)
+        {
+            if (dto is null) return BadRequest();
+
+            var result = await _courseService.CreateLessonAsync(id, moduleId, dto);
+            if (!result.Succeeded)
+            {
+                if (result.Errors.Any(e => e == "Course was not found." || e == "Module was not found."))
+                    return NotFound();
+                return BadRequest(new { errors = result.Errors });
+            }
+
+            return Ok(new { result.Title });
+        }
     }
 }

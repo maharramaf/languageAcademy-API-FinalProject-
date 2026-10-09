@@ -11,9 +11,17 @@ namespace Service.Services
     public class CourseService : ICourseService
     {
         private readonly ICourseRepository _courseRepo;
-        public CourseService(ICourseRepository courseRepo)
+        private readonly ICourseModuleRepository _moduleRepo;
+        private readonly ILessonRepository _lessonRepo;
+
+        public CourseService(
+            ICourseRepository courseRepo,
+            ICourseModuleRepository moduleRepo,
+            ILessonRepository lessonRepo)
         {
             _courseRepo = courseRepo;
+            _moduleRepo = moduleRepo;
+            _lessonRepo = lessonRepo;
         }
 
         public async Task<IEnumerable<CourseDto>> GetAllUIAsync()
@@ -68,22 +76,7 @@ namespace Service.Services
                     Course = course.Title,
                     CourseSlug = course.Slug
                 }).ToList(),
-                Modules = course.Modules.OrderBy(m => m.Order).Select(m => new CourseModuleDto
-                {
-                    Id = m.Id,
-                    Title = m.Title,
-                    Info = m.Info,
-                    Order = m.Order,
-                    Lessons = m.Lessons.OrderBy(x => x.Order).Select(x => new LessonDto
-                    {
-                        Id = x.Id,
-                        Title = x.Title,
-                        Kind = x.Kind.ToString().ToLowerInvariant(),
-                        Video = x.Video,
-                        Seconds = x.Seconds,
-                        Order = x.Order
-                    }).ToList()
-                }).ToList()
+                Modules = MapModules(course.Modules)
             };
         }
 
@@ -186,6 +179,102 @@ namespace Service.Services
             return new CourseCreateResultDto { Succeeded = true };
         }
 
+        public async Task<CourseDetailDto?> GetCurriculumAsync(int id)
+        {
+            var course = await _courseRepo.GetByIdWithLessonsAsync(id);
+            if (course is null) return null;
+
+            return new CourseDetailDto
+            {
+                Id = course.Id,
+                Slug = course.Slug,
+                Title = course.Title,
+                Type = course.Type.ToString().ToLowerInvariant(),
+                Level = course.Level,
+                Duration = course.Duration,
+                Price = course.Price,
+                Image = course.Image,
+                Summary = course.Summary,
+                Overview = course.Overview,
+                Video = course.Video,
+                Modules = MapModules(course.Modules)
+            };
+        }
+
+        public async Task<CourseCreateResultDto> CreateModuleAsync(int courseId, CourseModuleCreateDto dto)
+        {
+            var errors = new List<string>();
+            var title = (dto.Title ?? string.Empty).Trim();
+            var info = (dto.Info ?? string.Empty).Trim();
+            if (title.Length is 0 or > 160)
+                errors.Add("Module title is required.");
+            if (info.Length is 0 or > 80)
+                errors.Add("Module info is required.");
+            if (errors.Count > 0)
+                return Fail(errors);
+
+            var course = await _courseRepo.GetByIdAsync(courseId);
+            if (course is null)
+                return Fail("Course was not found.");
+
+            await _moduleRepo.AddAsync(new CourseModule
+            {
+                CourseId = courseId,
+                Title = title,
+                Info = info,
+                Order = await _moduleRepo.NextOrderAsync(courseId)
+            });
+
+            return new CourseCreateResultDto
+            {
+                Succeeded = true,
+                Title = title
+            };
+        }
+
+        public async Task<CourseCreateResultDto> CreateLessonAsync(int courseId, int moduleId, LessonCreateDto dto)
+        {
+            var errors = new List<string>();
+            var title = (dto.Title ?? string.Empty).Trim();
+            var kindText = (dto.Kind ?? string.Empty).Trim();
+            if (title.Length is 0 or > 160)
+                errors.Add("Lesson title is required.");
+            if (dto.Seconds < 0)
+                errors.Add("Duration cannot be negative.");
+
+            LessonKind kind = default;
+            if (kindText.Length == 0
+                || !Enum.TryParse(kindText, true, out kind)
+                || !Enum.IsDefined(kind))
+                errors.Add("Lesson type must be Video, Text, Quiz, Homework, or Download.");
+
+            if (errors.Count > 0)
+                return Fail(errors);
+
+            var course = await _courseRepo.GetByIdAsync(courseId);
+            if (course is null)
+                return Fail("Course was not found.");
+
+            var module = await _moduleRepo.GetByIdAsync(moduleId);
+            if (module is null || module.CourseId != courseId)
+                return Fail("Module was not found.");
+
+            await _lessonRepo.AddAsync(new Lesson
+            {
+                CourseModuleId = moduleId,
+                Title = title,
+                Kind = kind,
+                Seconds = dto.Seconds,
+                Order = await _lessonRepo.NextOrderAsync(moduleId)
+            });
+
+            return new CourseCreateResultDto
+            {
+                Succeeded = true,
+                Title = title
+            };
+        }
+
         private static List<string> Validate(CourseCreateDto dto)
         {
             return Validate(dto.Title, dto.Type, dto.Level, dto.Duration, dto.Price, dto.Image, dto.Summary, dto.Overview);
@@ -245,6 +334,26 @@ namespace Service.Services
             }
 
             return slug + "-" + Guid.NewGuid().ToString("N")[..8];
+        }
+
+        private static List<CourseModuleDto> MapModules(IEnumerable<CourseModule> modules)
+        {
+            return modules.OrderBy(m => m.Order).Select(m => new CourseModuleDto
+            {
+                Id = m.Id,
+                Title = m.Title,
+                Info = m.Info,
+                Order = m.Order,
+                Lessons = m.Lessons.OrderBy(x => x.Order).Select(x => new LessonDto
+                {
+                    Id = x.Id,
+                    Title = x.Title,
+                    Kind = x.Kind.ToString().ToLowerInvariant(),
+                    Video = x.Video,
+                    Seconds = x.Seconds,
+                    Order = x.Order
+                }).ToList()
+            }).ToList();
         }
 
         private static string Slugify(string title)
