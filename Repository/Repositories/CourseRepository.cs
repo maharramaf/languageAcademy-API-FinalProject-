@@ -60,5 +60,21 @@ namespace Repository.Repositories
         {
             return _dbContext.SaveChangesAsync();
         }
+
+        public async Task<bool> DeleteAsync(int id)
+        {
+            var course = await _dbSet
+                .Include(m => m.Reviews)
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (course is null)
+                return false;
+
+            if (course.Reviews.Count > 0)
+                _dbContext.Set<Review>().RemoveRange(course.Reviews);
+
+            _dbSet.Remove(course);
+            await _dbContext.SaveChangesAsync();
+            return true;
+        }
     }
 }

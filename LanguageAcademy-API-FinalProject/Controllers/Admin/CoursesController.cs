@@ -53,5 +53,19 @@ namespace LanguageAcademy_API_FinalProject.Controllers.Admin
 
             return Ok(new { result.Slug, result.Title });
         }
+
+        [HttpDelete("{id:int}")]
+        public async Task<IActionResult> DeleteAsync(int id)
+        {
+            var result = await _courseService.DeleteAsync(id);
+            if (!result.Succeeded)
+            {
+                if (result.Errors.Any(e => e == "Course was not found."))
+                    return NotFound();
+                return BadRequest(new { errors = result.Errors });
+            }
+
+            return Ok();
+        }
     }
 }

@@ -178,6 +178,14 @@ namespace Service.Services
             };
         }
 
+        public async Task<CourseCreateResultDto> DeleteAsync(int id)
+        {
+            if (!await _courseRepo.DeleteAsync(id))
+                return Fail("Course was not found.");
+
+            return new CourseCreateResultDto { Succeeded = true };
+        }
+
         private static List<string> Validate(CourseCreateDto dto)
         {
             return Validate(dto.Title, dto.Type, dto.Level, dto.Duration, dto.Price, dto.Image, dto.Summary, dto.Overview);

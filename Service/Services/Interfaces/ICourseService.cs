@@ -14,5 +14,6 @@ namespace Service.Services.Interfaces
         Task<CourseDetailDto?> GetByIdAsync(int id);
         Task<CourseCreateResultDto> CreateAsync(CourseCreateDto dto);
         Task<CourseCreateResultDto> UpdateAsync(int id, CourseUpdateDto dto);
+        Task<CourseCreateResultDto> DeleteAsync(int id);
     }
 }
