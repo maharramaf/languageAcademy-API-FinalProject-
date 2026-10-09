@@ -203,13 +203,7 @@ namespace Service.Services
 
         public async Task<CourseCreateResultDto> CreateModuleAsync(int courseId, CourseModuleCreateDto dto)
         {
-            var errors = new List<string>();
-            var title = (dto.Title ?? string.Empty).Trim();
-            var info = (dto.Info ?? string.Empty).Trim();
-            if (title.Length is 0 or > 160)
-                errors.Add("Module title is required.");
-            if (info.Length is 0 or > 80)
-                errors.Add("Module info is required.");
+            var errors = ValidateModule(dto.Title, dto.Info, out var title, out var info);
             if (errors.Count > 0)
                 return Fail(errors);
 
@@ -225,39 +219,20 @@ namespace Service.Services
                 Order = await _moduleRepo.NextOrderAsync(courseId)
             });
 
-            return new CourseCreateResultDto
-            {
-                Succeeded = true,
-                Title = title
-            };
+            return OkWrite(title);
         }
 
         public async Task<CourseCreateResultDto> CreateLessonAsync(int courseId, int moduleId, LessonCreateDto dto)
         {
-            var errors = new List<string>();
-            var title = (dto.Title ?? string.Empty).Trim();
-            var kindText = (dto.Kind ?? string.Empty).Trim();
-            if (title.Length is 0 or > 160)
-                errors.Add("Lesson title is required.");
-            if (dto.Seconds < 0)
-                errors.Add("Duration cannot be negative.");
-
-            LessonKind kind = default;
-            if (kindText.Length == 0
-                || !Enum.TryParse(kindText, true, out kind)
-                || !Enum.IsDefined(kind))
-                errors.Add("Lesson type must be Video, Text, Quiz, Homework, or Download.");
-
+            var errors = ValidateLesson(dto, out var title, out var kind);
             if (errors.Count > 0)
                 return Fail(errors);
 
-            var course = await _courseRepo.GetByIdAsync(courseId);
-            if (course is null)
-                return Fail("Course was not found.");
-
-            var module = await _moduleRepo.GetByIdAsync(moduleId);
-            if (module is null || module.CourseId != courseId)
-                return Fail("Module was not found.");
+            var module = await FindModuleAsync(courseId, moduleId);
+            if (module is null)
+                return Fail(await _courseRepo.GetByIdAsync(courseId) is null
+                    ? "Course was not found."
+                    : "Module was not found.");
 
             await _lessonRepo.AddAsync(new Lesson
             {
@@ -268,11 +243,76 @@ namespace Service.Services
                 Order = await _lessonRepo.NextOrderAsync(moduleId)
             });
 
-            return new CourseCreateResultDto
-            {
-                Succeeded = true,
-                Title = title
-            };
+            return OkWrite(title);
+        }
+
+        public async Task<CourseModuleDto?> GetModuleAsync(int courseId, int moduleId)
+        {
+            var module = await FindModuleAsync(courseId, moduleId);
+            return module is null ? null : MapModule(module);
+        }
+
+        public async Task<CourseCreateResultDto> UpdateModuleAsync(int courseId, int moduleId, CourseModuleCreateDto dto)
+        {
+            var errors = ValidateModule(dto.Title, dto.Info, out var title, out var info);
+            if (errors.Count > 0)
+                return Fail(errors);
+
+            var module = await FindModuleAsync(courseId, moduleId);
+            if (module is null)
+                return Fail(await _courseRepo.GetByIdAsync(courseId) is null
+                    ? "Course was not found."
+                    : "Module was not found.");
+
+            module.Title = title;
+            module.Info = info;
+            await _moduleRepo.SaveAsync();
+            return OkWrite(title);
+        }
+
+        public async Task<CourseCreateResultDto> DeleteModuleAsync(int courseId, int moduleId)
+        {
+            var module = await FindModuleAsync(courseId, moduleId);
+            if (module is null)
+                return Fail(await _courseRepo.GetByIdAsync(courseId) is null
+                    ? "Course was not found."
+                    : "Module was not found.");
+
+            await _moduleRepo.DeleteAsync(module);
+            return new CourseCreateResultDto { Succeeded = true };
+        }
+
+        public async Task<LessonDto?> GetLessonAsync(int courseId, int moduleId, int lessonId)
+        {
+            var lesson = await FindLessonAsync(courseId, moduleId, lessonId);
+            return lesson is null ? null : MapLesson(lesson);
+        }
+
+        public async Task<CourseCreateResultDto> UpdateLessonAsync(int courseId, int moduleId, int lessonId, LessonCreateDto dto)
+        {
+            var errors = ValidateLesson(dto, out var title, out var kind);
+            if (errors.Count > 0)
+                return Fail(errors);
+
+            var lesson = await FindLessonAsync(courseId, moduleId, lessonId);
+            if (lesson is null)
+                return Fail("Lesson was not found.");
+
+            lesson.Title = title;
+            lesson.Kind = kind;
+            lesson.Seconds = dto.Seconds;
+            await _lessonRepo.SaveAsync();
+            return OkWrite(title);
+        }
+
+        public async Task<CourseCreateResultDto> DeleteLessonAsync(int courseId, int moduleId, int lessonId)
+        {
+            var lesson = await FindLessonAsync(courseId, moduleId, lessonId);
+            if (lesson is null)
+                return Fail("Lesson was not found.");
+
+            await _lessonRepo.DeleteAsync(lesson);
+            return new CourseCreateResultDto { Succeeded = true };
         }
 
         private static List<string> Validate(CourseCreateDto dto)
@@ -336,24 +376,87 @@ namespace Service.Services
             return slug + "-" + Guid.NewGuid().ToString("N")[..8];
         }
 
+        private async Task<CourseModule?> FindModuleAsync(int courseId, int moduleId)
+        {
+            var module = await _moduleRepo.GetByIdAsync(moduleId);
+            return module is null || module.CourseId != courseId ? null : module;
+        }
+
+        private async Task<Lesson?> FindLessonAsync(int courseId, int moduleId, int lessonId)
+        {
+            var module = await FindModuleAsync(courseId, moduleId);
+            if (module is null) return null;
+
+            var lesson = await _lessonRepo.GetByIdAsync(lessonId);
+            return lesson is null || lesson.CourseModuleId != moduleId ? null : lesson;
+        }
+
+        private static List<string> ValidateModule(string? title, string? info, out string trimmedTitle, out string trimmedInfo)
+        {
+            trimmedTitle = (title ?? string.Empty).Trim();
+            trimmedInfo = (info ?? string.Empty).Trim();
+            var errors = new List<string>();
+            if (trimmedTitle.Length is 0 or > 160)
+                errors.Add("Module title is required.");
+            if (trimmedInfo.Length is 0 or > 80)
+                errors.Add("Module info is required.");
+            return errors;
+        }
+
+        private static List<string> ValidateLesson(LessonCreateDto dto, out string title, out LessonKind kind)
+        {
+            title = (dto.Title ?? string.Empty).Trim();
+            var kindText = (dto.Kind ?? string.Empty).Trim();
+            kind = default;
+            var errors = new List<string>();
+            if (title.Length is 0 or > 160)
+                errors.Add("Lesson title is required.");
+            if (dto.Seconds < 0)
+                errors.Add("Duration cannot be negative.");
+            if (kindText.Length == 0
+                || !Enum.TryParse(kindText, true, out kind)
+                || !Enum.IsDefined(kind))
+                errors.Add("Lesson type must be Video, Text, Quiz, Homework, or Download.");
+            return errors;
+        }
+
+        private static CourseCreateResultDto OkWrite(string title)
+        {
+            return new CourseCreateResultDto
+            {
+                Succeeded = true,
+                Title = title
+            };
+        }
+
         private static List<CourseModuleDto> MapModules(IEnumerable<CourseModule> modules)
         {
-            return modules.OrderBy(m => m.Order).Select(m => new CourseModuleDto
+            return modules.OrderBy(m => m.Order).Select(MapModule).ToList();
+        }
+
+        private static CourseModuleDto MapModule(CourseModule module)
+        {
+            return new CourseModuleDto
             {
-                Id = m.Id,
-                Title = m.Title,
-                Info = m.Info,
-                Order = m.Order,
-                Lessons = m.Lessons.OrderBy(x => x.Order).Select(x => new LessonDto
-                {
-                    Id = x.Id,
-                    Title = x.Title,
-                    Kind = x.Kind.ToString().ToLowerInvariant(),
-                    Video = x.Video,
-                    Seconds = x.Seconds,
-                    Order = x.Order
-                }).ToList()
-            }).ToList();
+                Id = module.Id,
+                Title = module.Title,
+                Info = module.Info,
+                Order = module.Order,
+                Lessons = module.Lessons.OrderBy(x => x.Order).Select(MapLesson).ToList()
+            };
+        }
+
+        private static LessonDto MapLesson(Lesson lesson)
+        {
+            return new LessonDto
+            {
+                Id = lesson.Id,
+                Title = lesson.Title,
+                Kind = lesson.Kind.ToString().ToLowerInvariant(),
+                Video = lesson.Video,
+                Seconds = lesson.Seconds,
+                Order = lesson.Order
+            };
         }
 
         private static string Slugify(string title)

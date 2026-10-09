@@ -15,9 +15,25 @@ namespace Repository.Repositories
             return (max ?? 0) + 1;
         }
 
+        public Task<Lesson?> GetByIdAsync(int id)
+        {
+            return _dbSet.FirstOrDefaultAsync(m => m.Id == id);
+        }
+
         public async Task AddAsync(Lesson lesson)
         {
             await _dbSet.AddAsync(lesson);
+            await _dbContext.SaveChangesAsync();
+        }
+
+        public Task SaveAsync()
+        {
+            return _dbContext.SaveChangesAsync();
+        }
+
+        public async Task DeleteAsync(Lesson lesson)
+        {
+            _dbSet.Remove(lesson);
             await _dbContext.SaveChangesAsync();
         }
     }

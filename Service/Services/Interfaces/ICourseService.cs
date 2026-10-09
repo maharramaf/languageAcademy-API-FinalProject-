@@ -18,5 +18,11 @@ namespace Service.Services.Interfaces
         Task<CourseDetailDto?> GetCurriculumAsync(int id);
         Task<CourseCreateResultDto> CreateModuleAsync(int courseId, CourseModuleCreateDto dto);
         Task<CourseCreateResultDto> CreateLessonAsync(int courseId, int moduleId, LessonCreateDto dto);
+        Task<CourseModuleDto?> GetModuleAsync(int courseId, int moduleId);
+        Task<CourseCreateResultDto> UpdateModuleAsync(int courseId, int moduleId, CourseModuleCreateDto dto);
+        Task<CourseCreateResultDto> DeleteModuleAsync(int courseId, int moduleId);
+        Task<LessonDto?> GetLessonAsync(int courseId, int moduleId, int lessonId);
+        Task<CourseCreateResultDto> UpdateLessonAsync(int courseId, int moduleId, int lessonId, LessonCreateDto dto);
+        Task<CourseCreateResultDto> DeleteLessonAsync(int courseId, int moduleId, int lessonId);
     }
 }

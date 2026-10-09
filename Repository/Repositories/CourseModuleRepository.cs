@@ -25,5 +25,16 @@ namespace Repository.Repositories
             await _dbSet.AddAsync(module);
             await _dbContext.SaveChangesAsync();
         }
+
+        public Task SaveAsync()
+        {
+            return _dbContext.SaveChangesAsync();
+        }
+
+        public async Task DeleteAsync(CourseModule module)
+        {
+            _dbSet.Remove(module);
+            await _dbContext.SaveChangesAsync();
+        }
     }
 }

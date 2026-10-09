@@ -107,5 +107,59 @@ namespace LanguageAcademy_API_FinalProject.Controllers.Admin
 
             return Ok(new { result.Title });
         }
+
+        [HttpGet("{id:int}/modules/{moduleId:int}")]
+        public async Task<IActionResult> GetModuleAsync(int id, int moduleId)
+        {
+            var module = await _courseService.GetModuleAsync(id, moduleId);
+            if (module is null) return NotFound();
+            return Ok(module);
+        }
+
+        [HttpPut("{id:int}/modules/{moduleId:int}")]
+        public async Task<IActionResult> UpdateModuleAsync(int id, int moduleId, [FromBody] CourseModuleCreateDto? dto)
+        {
+            if (dto is null) return BadRequest();
+            return WriteResult(await _courseService.UpdateModuleAsync(id, moduleId, dto));
+        }
+
+        [HttpDelete("{id:int}/modules/{moduleId:int}")]
+        public async Task<IActionResult> DeleteModuleAsync(int id, int moduleId)
+        {
+            return WriteResult(await _courseService.DeleteModuleAsync(id, moduleId), emptyOk: true);
+        }
+
+        [HttpGet("{id:int}/modules/{moduleId:int}/lessons/{lessonId:int}")]
+        public async Task<IActionResult> GetLessonAsync(int id, int moduleId, int lessonId)
+        {
+            var lesson = await _courseService.GetLessonAsync(id, moduleId, lessonId);
+            if (lesson is null) return NotFound();
+            return Ok(lesson);
+        }
+
+        [HttpPut("{id:int}/modules/{moduleId:int}/lessons/{lessonId:int}")]
+        public async Task<IActionResult> UpdateLessonAsync(int id, int moduleId, int lessonId, [FromBody] LessonCreateDto? dto)
+        {
+            if (dto is null) return BadRequest();
+            return WriteResult(await _courseService.UpdateLessonAsync(id, moduleId, lessonId, dto));
+        }
+
+        [HttpDelete("{id:int}/modules/{moduleId:int}/lessons/{lessonId:int}")]
+        public async Task<IActionResult> DeleteLessonAsync(int id, int moduleId, int lessonId)
+        {
+            return WriteResult(await _courseService.DeleteLessonAsync(id, moduleId, lessonId), emptyOk: true);
+        }
+
+        private IActionResult WriteResult(CourseCreateResultDto result, bool emptyOk = false)
+        {
+            if (!result.Succeeded)
+            {
+                if (result.Errors.Any(e => e.EndsWith("was not found.")))
+                    return NotFound();
+                return BadRequest(new { errors = result.Errors });
+            }
+
+            return emptyOk ? Ok() : Ok(new { result.Title });
+        }
     }
 }

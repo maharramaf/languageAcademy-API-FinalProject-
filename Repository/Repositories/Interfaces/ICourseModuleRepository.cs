@@ -12,5 +12,7 @@ namespace Repository.Repositories.Interfaces
         Task<CourseModule?> GetByIdAsync(int id);
         Task<int> NextOrderAsync(int courseId);
         Task AddAsync(CourseModule module);
+        Task SaveAsync();
+        Task DeleteAsync(CourseModule module);
     }
 }
