@@ -240,6 +240,7 @@ namespace Service.Services
                 Title = title,
                 Kind = kind,
                 Seconds = dto.Seconds,
+                Video = NormalizeVideo(dto.Video),
                 Order = await _lessonRepo.NextOrderAsync(moduleId)
             });
 
@@ -301,6 +302,9 @@ namespace Service.Services
             lesson.Title = title;
             lesson.Kind = kind;
             lesson.Seconds = dto.Seconds;
+            var video = NormalizeVideo(dto.Video);
+            if (video is not null)
+                lesson.Video = video;
             await _lessonRepo.SaveAsync();
             return OkWrite(title);
         }
@@ -417,7 +421,20 @@ namespace Service.Services
                 || !Enum.TryParse(kindText, true, out kind)
                 || !Enum.IsDefined(kind))
                 errors.Add("Lesson type must be Video, Text, Quiz, Homework, or Download.");
+            var video = (dto.Video ?? string.Empty).Trim();
+            if (video.StartsWith("http", StringComparison.OrdinalIgnoreCase))
+                errors.Add("Upload a video file. Do not paste a URL.");
+            if (video.Length > 500)
+                errors.Add("Video path is too long.");
             return errors;
+        }
+
+        private static string? NormalizeVideo(string? video)
+        {
+            video = (video ?? string.Empty).Trim().Replace('\\', '/');
+            return video.Length == 0 || video.StartsWith("http", StringComparison.OrdinalIgnoreCase)
+                ? null
+                : video;
         }
 
         private static CourseCreateResultDto OkWrite(string title)
