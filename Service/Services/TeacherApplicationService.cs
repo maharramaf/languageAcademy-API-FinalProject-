@@ -101,7 +101,8 @@ namespace Service.Services
                     UserName = application.Email,
                     PhoneNumber = application.Phone,
                     EmailConfirmed = true,
-                    Plan = CourseType.Demo
+                    Plan = CourseType.Demo,
+                    TeacherPlan = CourseType.Demo
                 };
 
                 var created = await _userManager.CreateAsync(user, temporaryPassword);

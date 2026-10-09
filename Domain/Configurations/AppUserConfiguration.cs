@@ -13,6 +13,7 @@ namespace Domain.Configurations
             builder.Property(m => m.Name).IsRequired().HasMaxLength(80);
             builder.Property(m => m.Surname).IsRequired().HasMaxLength(80);
             builder.Property(m => m.Plan).HasDefaultValue(CourseType.Demo);
+            builder.Property(m => m.TeacherPlan).HasDefaultValue(CourseType.Demo);
             builder.Property(m => m.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
         }
     }

@@ -218,6 +218,11 @@ namespace Repository.Data.Migrations
                         .HasMaxLength(80)
                         .HasColumnType("nvarchar(80)");
 
+                    b.Property<int>("TeacherPlan")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1);
+
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("bit");
 
