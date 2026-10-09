@@ -477,6 +477,37 @@ namespace Repository.Data.Migrations
                     b.ToTable("CourseOutcomes");
                 });
 
+            modelBuilder.Entity("Domain.Entities.Enrollment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CourseId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<string>("StudentId")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CourseId");
+
+                    b.HasIndex("StudentId", "CourseId")
+                        .IsUnique();
+
+                    b.ToTable("Enrollments");
+                });
+
             modelBuilder.Entity("Domain.Entities.Hero", b =>
                 {
                     b.Property<int>("Id")
@@ -1323,6 +1354,25 @@ namespace Repository.Data.Migrations
                     b.Navigation("Course");
                 });
 
+            modelBuilder.Entity("Domain.Entities.Enrollment", b =>
+                {
+                    b.HasOne("Domain.Entities.Course", "Course")
+                        .WithMany("Enrollments")
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.AppUser", "Student")
+                        .WithMany()
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Course");
+
+                    b.Navigation("Student");
+                });
+
             modelBuilder.Entity("Domain.Entities.HowWeWorkCard", b =>
                 {
                     b.HasOne("Domain.Entities.HowWeWork", "HowWeWork")
@@ -1431,6 +1481,8 @@ namespace Repository.Data.Migrations
 
             modelBuilder.Entity("Domain.Entities.Course", b =>
                 {
+                    b.Navigation("Enrollments");
+
                     b.Navigation("Modules");
 
                     b.Navigation("Outcomes");

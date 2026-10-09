@@ -73,12 +73,16 @@ namespace Repository.Repositories
         {
             var course = await _dbSet
                 .Include(m => m.Reviews)
+                .Include(m => m.Enrollments)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (course is null)
                 return false;
 
             if (course.Reviews.Count > 0)
                 _dbContext.Set<Review>().RemoveRange(course.Reviews);
+
+            if (course.Enrollments.Count > 0)
+                _dbContext.Set<Enrollment>().RemoveRange(course.Enrollments);
 
             _dbSet.Remove(course);
             await _dbContext.SaveChangesAsync();
