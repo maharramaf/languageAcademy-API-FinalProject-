@@ -130,6 +130,125 @@ namespace Service.Services
             return items;
         }
 
+        public async Task<ProfileDto?> GetProfileAsync(string userId)
+        {
+            var user = await FindUserAsync(userId);
+            if (user is null) return null;
+
+            var roles = await _userManager.GetRolesAsync(user);
+            return MapProfile(user, roles);
+        }
+
+        public async Task<ProfileResultDto> UpdateProfileAsync(string userId, ProfileUpdateDto dto)
+        {
+            var errors = ValidateProfile(dto);
+            if (errors.Count > 0)
+                return ProfileFail(errors);
+
+            var user = await FindUserAsync(userId);
+            if (user is null)
+                return ProfileFail("Account was not found.");
+
+            user.Name = dto.Name.Trim();
+            user.Surname = dto.Surname.Trim();
+            user.PhoneNumber = dto.Phone.Trim();
+
+            var updated = await _userManager.UpdateAsync(user);
+            if (!updated.Succeeded)
+                return ProfileFail(updated.Errors.Select(e => e.Description));
+
+            var roles = await _userManager.GetRolesAsync(user);
+            return new ProfileResultDto
+            {
+                Succeeded = true,
+                Token = CreateToken(user, roles)
+            };
+        }
+
+        public async Task<ProfileResultDto> ChangePasswordAsync(string userId, ChangePasswordDto dto)
+        {
+            var current = dto.CurrentPassword ?? string.Empty;
+            var password = dto.NewPassword ?? string.Empty;
+            var confirm = dto.ConfirmPassword ?? string.Empty;
+            var errors = new List<string>();
+
+            if (string.IsNullOrEmpty(current))
+                errors.Add("Current password is required.");
+            if (string.IsNullOrEmpty(password))
+                errors.Add("New password is required.");
+            else if (password.Length < 8)
+                errors.Add("Use at least 8 characters.");
+            if (string.IsNullOrEmpty(confirm))
+                errors.Add("Confirm your password.");
+            else if (confirm != password)
+                errors.Add("Passwords do not match.");
+            if (errors.Count > 0)
+                return ProfileFail(errors);
+
+            var user = await FindUserAsync(userId);
+            if (user is null)
+                return ProfileFail("Account was not found.");
+
+            var changed = await _userManager.ChangePasswordAsync(user, current, password);
+            if (!changed.Succeeded)
+            {
+                if (changed.Errors.Any(e => e.Code == "PasswordMismatch"))
+                    return ProfileFail("Current password is incorrect.");
+                return ProfileFail(changed.Errors.Select(e => e.Description));
+            }
+
+            return new ProfileResultDto { Succeeded = true };
+        }
+
+        private async Task<AppUser?> FindUserAsync(string userId)
+        {
+            if (string.IsNullOrWhiteSpace(userId))
+                return null;
+
+            return await _userManager.FindByIdAsync(userId);
+        }
+
+        private static ProfileDto MapProfile(AppUser user, IList<string> roles)
+        {
+            return new ProfileDto
+            {
+                Name = user.Name,
+                Surname = user.Surname,
+                Email = user.Email ?? string.Empty,
+                Phone = user.PhoneNumber ?? string.Empty,
+                Role = roles.FirstOrDefault() ?? string.Empty
+            };
+        }
+
+        private static List<string> ValidateProfile(ProfileUpdateDto dto)
+        {
+            var errors = new List<string>();
+            var name = (dto.Name ?? string.Empty).Trim();
+            var surname = (dto.Surname ?? string.Empty).Trim();
+            var phone = (dto.Phone ?? string.Empty).Trim();
+            var digits = Regex.Replace(phone, @"\D", string.Empty);
+
+            if (name.Length is 0 or > 80)
+                errors.Add("Name is required.");
+            if (surname.Length is 0 or > 80)
+                errors.Add("Surname is required.");
+            if (phone.Length is 0 or > 40 || digits.Length < 7)
+                errors.Add("Enter a valid phone number.");
+
+            return errors;
+        }
+
+        private static ProfileResultDto ProfileFail(string error) => ProfileFail(new[] { error });
+
+        private static ProfileResultDto ProfileFail(IEnumerable<string> errors)
+        {
+            return new ProfileResultDto
+            {
+                Succeeded = false,
+                Errors = errors.ToList()
+            };
+        }
+
         private string CreateToken(AppUser user, IList<string> roles)
         {
             var jwt = _configuration.GetSection("Jwt");
