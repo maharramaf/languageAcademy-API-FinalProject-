@@ -5,6 +5,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using Domain.Constants;
 using Domain.Entities;
+using Domain.Enums;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -44,7 +45,8 @@ namespace Service.Services
                 Email = email,
                 UserName = email,
                 PhoneNumber = dto.Phone.Trim(),
-                EmailConfirmed = true
+                EmailConfirmed = true,
+                Plan = CourseType.Demo
             };
 
             var created = await _userManager.CreateAsync(user, dto.Password);

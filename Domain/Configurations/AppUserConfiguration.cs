@@ -1,4 +1,5 @@
 using Domain.Entities;
+using Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -11,6 +12,7 @@ namespace Domain.Configurations
         {
             builder.Property(m => m.Name).IsRequired().HasMaxLength(80);
             builder.Property(m => m.Surname).IsRequired().HasMaxLength(80);
+            builder.Property(m => m.Plan).HasDefaultValue(CourseType.Demo);
             builder.Property(m => m.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
         }
     }
