@@ -30,5 +30,23 @@ namespace Repository.Repositories
                 .OrderByDescending(m => m.CreatedAt)
                 .ToListAsync();
         }
+
+        public async Task<IReadOnlyList<string>> GetTeacherIdsByStudentAsync(string studentId)
+        {
+            return await _dbSet.AsNoTracking()
+                .Where(m => m.StudentId == studentId && m.Course.TeacherId != null)
+                .Select(m => m.Course.TeacherId!)
+                .Distinct()
+                .ToListAsync();
+        }
+
+        public async Task<IReadOnlyList<string>> GetStudentIdsByTeacherAsync(string teacherId)
+        {
+            return await _dbSet.AsNoTracking()
+                .Where(m => m.Course.TeacherId == teacherId)
+                .Select(m => m.StudentId)
+                .Distinct()
+                .ToListAsync();
+        }
     }
 }
