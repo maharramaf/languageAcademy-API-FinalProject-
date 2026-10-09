@@ -76,7 +76,7 @@ namespace Service.Services
                     Course = course.Title,
                     CourseSlug = course.Slug
                 }).ToList(),
-                Modules = MapModules(course.Modules)
+                Modules = MapModules(course.Modules, includeVideo: false)
             };
         }
 
@@ -446,12 +446,12 @@ namespace Service.Services
             };
         }
 
-        private static List<CourseModuleDto> MapModules(IEnumerable<CourseModule> modules)
+        private static List<CourseModuleDto> MapModules(IEnumerable<CourseModule> modules, bool includeVideo = true)
         {
-            return modules.OrderBy(m => m.Order).Select(MapModule).ToList();
+            return modules.OrderBy(m => m.Order).Select(m => MapModule(m, includeVideo)).ToList();
         }
 
-        private static CourseModuleDto MapModule(CourseModule module)
+        private static CourseModuleDto MapModule(CourseModule module, bool includeVideo = true)
         {
             return new CourseModuleDto
             {
@@ -459,18 +459,18 @@ namespace Service.Services
                 Title = module.Title,
                 Info = module.Info,
                 Order = module.Order,
-                Lessons = module.Lessons.OrderBy(x => x.Order).Select(MapLesson).ToList()
+                Lessons = module.Lessons.OrderBy(x => x.Order).Select(m => MapLesson(m, includeVideo)).ToList()
             };
         }
 
-        private static LessonDto MapLesson(Lesson lesson)
+        private static LessonDto MapLesson(Lesson lesson, bool includeVideo = true)
         {
             return new LessonDto
             {
                 Id = lesson.Id,
                 Title = lesson.Title,
                 Kind = lesson.Kind.ToString().ToLowerInvariant(),
-                Video = lesson.Video,
+                Video = includeVideo ? lesson.Video : null,
                 Seconds = lesson.Seconds,
                 Order = lesson.Order
             };

@@ -38,6 +38,17 @@ namespace LanguageAcademy_API_FinalProject.Controllers.Client
             return Ok(new { enrolled = await _enrollmentService.IsEnrolledAsync(studentId, courseId) });
         }
 
+        [HttpGet("learn/{slug}")]
+        public async Task<IActionResult> GetLearnAsync(string slug)
+        {
+            var studentId = StudentId();
+            if (studentId is null) return Unauthorized();
+
+            var course = await _enrollmentService.GetLearnAsync(studentId, slug);
+            if (course is null) return NotFound();
+            return Ok(course);
+        }
+
         [HttpPost]
         public async Task<IActionResult> EnrollAsync([FromBody] EnrollmentCreateDto? dto)
         {

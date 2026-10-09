@@ -8,5 +8,6 @@ namespace Service.Services.Interfaces
         Task<EnrollmentResultDto> EnrollAsync(string studentId, EnrollmentCreateDto dto);
         Task<IReadOnlyList<CourseDto>> GetMineAsync(string studentId);
         Task<bool> IsEnrolledAsync(string studentId, int courseId);
+        Task<CourseDetailDto?> GetLearnAsync(string studentId, string slug);
     }
 }

@@ -61,6 +61,50 @@ namespace Service.Services
             return _enrollmentRepo.ExistsAsync(studentId, courseId);
         }
 
+        public async Task<CourseDetailDto?> GetLearnAsync(string studentId, string slug)
+        {
+            if (string.IsNullOrWhiteSpace(studentId) || string.IsNullOrWhiteSpace(slug))
+                return null;
+
+            var course = await _courseRepo.GetBySlugAsync(slug.Trim());
+            if (course is null)
+                return null;
+
+            if (!await _enrollmentRepo.ExistsAsync(studentId, course.Id))
+                return null;
+
+            return new CourseDetailDto
+            {
+                Id = course.Id,
+                Slug = course.Slug,
+                Title = course.Title,
+                Type = course.Type.ToString().ToLowerInvariant(),
+                Level = course.Level,
+                Duration = course.Duration,
+                Price = course.Price,
+                Image = course.Image,
+                Summary = course.Summary,
+                Overview = course.Overview,
+                Video = course.Video,
+                Modules = course.Modules.OrderBy(m => m.Order).Select(module => new CourseModuleDto
+                {
+                    Id = module.Id,
+                    Title = module.Title,
+                    Info = module.Info,
+                    Order = module.Order,
+                    Lessons = module.Lessons.OrderBy(x => x.Order).Select(lesson => new LessonDto
+                    {
+                        Id = lesson.Id,
+                        Title = lesson.Title,
+                        Kind = lesson.Kind.ToString().ToLowerInvariant(),
+                        Video = lesson.Video,
+                        Seconds = lesson.Seconds,
+                        Order = lesson.Order
+                    }).ToList()
+                }).ToList()
+            };
+        }
+
         private static EnrollmentResultDto Ok(Course course)
         {
             return new EnrollmentResultDto
