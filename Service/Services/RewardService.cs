@@ -25,17 +25,20 @@ namespace Service.Services
         private readonly IEnrollmentRepository _enrollmentRepo;
         private readonly ILessonRepository _lessonRepo;
         private readonly ILessonProgressRepository _progressRepo;
+        private readonly ICertificateService _certificateService;
 
         public RewardService(
             UserManager<AppUser> userManager,
             IEnrollmentRepository enrollmentRepo,
             ILessonRepository lessonRepo,
-            ILessonProgressRepository progressRepo)
+            ILessonProgressRepository progressRepo,
+            ICertificateService certificateService)
         {
             _userManager = userManager;
             _enrollmentRepo = enrollmentRepo;
             _lessonRepo = lessonRepo;
             _progressRepo = progressRepo;
+            _certificateService = certificateService;
         }
 
         public async Task<RewardsDto?> GetMineAsync(string userId)
@@ -127,12 +130,16 @@ namespace Service.Services
                 LessonId = lessonId
             });
 
+            var certificate = await _certificateService.TryIssueAsync(userId, lesson.CourseModule.CourseId);
+
             return new RewardCompleteResultDto
             {
                 Succeeded = true,
                 XpGained = xp,
                 PointsGained = points,
-                Kind = kind
+                Kind = kind,
+                CertificateReady = certificate?.Created == true,
+                CourseSlug = certificate?.CourseSlug ?? lesson.CourseModule.Course.Slug
             };
         }
 

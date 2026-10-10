@@ -33,6 +33,7 @@ namespace Service
             services.AddScoped<ITeacherPlanService, TeacherPlanService>();
             services.AddScoped<IEarningsService, EarningsService>();
             services.AddScoped<IRewardService, RewardService>();
+            services.AddScoped<ICertificateService, CertificateService>();
             return services;
         }
     }

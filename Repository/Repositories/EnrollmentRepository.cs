@@ -14,6 +14,12 @@ namespace Repository.Repositories
             return _dbSet.AnyAsync(m => m.StudentId == studentId && m.CourseId == courseId);
         }
 
+        public Task<Enrollment?> GetAsync(string studentId, int courseId)
+        {
+            return _dbSet.AsNoTracking()
+                .FirstOrDefaultAsync(m => m.StudentId == studentId && m.CourseId == courseId);
+        }
+
         public async Task AddAsync(Enrollment enrollment)
         {
             await _dbSet.AddAsync(enrollment);

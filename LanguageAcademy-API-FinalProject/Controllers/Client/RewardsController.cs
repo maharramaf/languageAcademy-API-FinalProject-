@@ -44,7 +44,15 @@ namespace LanguageAcademy_API_FinalProject.Controllers.Client
             if (!result.Succeeded)
                 return BadRequest(new { errors = result.Errors });
 
-            return Ok(new { result.AlreadyCompleted, result.XpGained, result.PointsGained, result.Kind });
+            return Ok(new
+            {
+                result.AlreadyCompleted,
+                result.XpGained,
+                result.PointsGained,
+                result.Kind,
+                result.CertificateReady,
+                result.CourseSlug
+            });
         }
     }
 }
