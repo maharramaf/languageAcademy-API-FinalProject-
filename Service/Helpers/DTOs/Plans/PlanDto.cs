@@ -6,5 +6,7 @@ namespace Service.Helpers.DTOs.Plans
         public string Title { get; set; } = string.Empty;
         public decimal Price { get; set; }
         public string Info { get; set; } = string.Empty;
+        public List<string> Features { get; set; } = new();
+        public int? CourseLimit { get; set; }
     }
 }

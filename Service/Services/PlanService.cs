@@ -20,10 +20,13 @@ namespace Service.Services
             var user = await FindUserAsync(userId);
             if (user is null) return null;
 
+            var items = Catalog();
+            var current = user.Plan.ToString().ToLowerInvariant();
             return new PlanPageDto
             {
-                Current = user.Plan.ToString().ToLowerInvariant(),
-                Items = Catalog()
+                Current = current,
+                CurrentTitle = items.FirstOrDefault(item => item.Type == current)?.Title ?? user.Plan.ToString(),
+                Items = items
             };
         }
 
@@ -66,21 +69,45 @@ namespace Service.Services
                     Type = "demo",
                     Title = "Demo",
                     Price = 0,
-                    Info = "Free access to demo courses."
+                    Info = "Start with demo courses. No card is charged.",
+                    Features = new List<string>
+                    {
+                        "Demo courses only",
+                        "Certificates when a demo course is complete",
+                        "Rewards XP and MF Points",
+                        "Test membership, no card"
+                    }
                 },
                 new()
                 {
                     Type = "standard",
                     Title = "Standard",
                     Price = 29,
-                    Info = "Standard courses. No card charge in this test."
+                    Info = "Unlock Standard courses. No card charge in this test.",
+                    Features = new List<string>
+                    {
+                        "Demo and Standard courses",
+                        "Certificates when a course is complete",
+                        "Messages with your teacher",
+                        "Rewards XP and MF Points",
+                        "Test membership, no card"
+                    }
                 },
                 new()
                 {
                     Type = "premium",
                     Title = "Premium",
                     Price = 49,
-                    Info = "All courses. No card charge in this test."
+                    Info = "All course types. No card charge in this test.",
+                    Features = new List<string>
+                    {
+                        "All course types, including Premium",
+                        "Certificates when a course is complete",
+                        "Messages with your teacher",
+                        "Priority classroom access",
+                        "Rewards XP and MF Points",
+                        "Test membership, no card"
+                    }
                 }
             };
         }
