@@ -9,5 +9,6 @@ namespace Repository.Repositories.Interfaces
         Task<IReadOnlyList<Enrollment>> GetByStudentAsync(string studentId);
         Task<IReadOnlyList<string>> GetTeacherIdsByStudentAsync(string studentId);
         Task<IReadOnlyList<string>> GetStudentIdsByTeacherAsync(string teacherId);
+        Task<IReadOnlyList<Enrollment>> GetByTeacherAsync(string teacherId);
     }
 }

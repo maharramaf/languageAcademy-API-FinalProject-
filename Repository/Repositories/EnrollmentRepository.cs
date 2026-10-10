@@ -48,5 +48,14 @@ namespace Repository.Repositories
                 .Distinct()
                 .ToListAsync();
         }
+
+        public async Task<IReadOnlyList<Enrollment>> GetByTeacherAsync(string teacherId)
+        {
+            return await _dbSet.AsNoTracking()
+                .Include(m => m.Course)
+                .Where(m => m.Course.TeacherId == teacherId)
+                .OrderByDescending(m => m.CreatedAt)
+                .ToListAsync();
+        }
     }
 }

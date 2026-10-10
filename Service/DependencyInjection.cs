@@ -31,6 +31,7 @@ namespace Service
             services.AddScoped<IMessageService, MessageService>();
             services.AddScoped<IPlanService, PlanService>();
             services.AddScoped<ITeacherPlanService, TeacherPlanService>();
+            services.AddScoped<IEarningsService, EarningsService>();
             return services;
         }
     }
