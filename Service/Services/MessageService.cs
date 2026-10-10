@@ -103,14 +103,32 @@ namespace Service.Services
             if (!await CanTalkAsync(userId, receiverId))
                 return Fail("You cannot message this user.");
 
-            await _messageRepo.AddAsync(new Message
+            var sender = await _userManager.FindByIdAsync(userId);
+            if (sender is null)
+                return Fail("Account was not found.");
+
+            var message = new Message
             {
                 SenderId = userId,
                 ReceiverId = receiverId,
                 Body = body
-            });
+            };
+            await _messageRepo.AddAsync(message);
 
-            return new MessageResultDto { Succeeded = true };
+            return new MessageResultDto
+            {
+                Succeeded = true,
+                Message = new MessageDto
+                {
+                    Id = message.Id,
+                    SenderId = userId,
+                    ReceiverId = receiverId,
+                    SenderName = DisplayName(sender),
+                    Body = body,
+                    CreatedAt = message.CreatedAt,
+                    Mine = true
+                }
+            };
         }
 
         private async Task<bool> CanTalkAsync(string userId, string otherId)
