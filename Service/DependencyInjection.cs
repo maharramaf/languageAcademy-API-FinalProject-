@@ -34,6 +34,8 @@ namespace Service
             services.AddScoped<IEarningsService, EarningsService>();
             services.AddScoped<IRewardService, RewardService>();
             services.AddScoped<ICertificateService, CertificateService>();
+            services.AddScoped<INotificationPush, NullNotificationPush>();
+            services.AddScoped<INotificationService, NotificationService>();
             return services;
         }
     }

@@ -12,15 +12,18 @@ namespace Service.Services
         private readonly IMessageRepository _messageRepo;
         private readonly IEnrollmentRepository _enrollmentRepo;
         private readonly UserManager<AppUser> _userManager;
+        private readonly INotificationService _notificationService;
 
         public MessageService(
             IMessageRepository messageRepo,
             IEnrollmentRepository enrollmentRepo,
-            UserManager<AppUser> userManager)
+            UserManager<AppUser> userManager,
+            INotificationService notificationService)
         {
             _messageRepo = messageRepo;
             _enrollmentRepo = enrollmentRepo;
             _userManager = userManager;
+            _notificationService = notificationService;
         }
 
         public async Task<IReadOnlyList<ConversationDto>> GetInboxAsync(string userId)
@@ -114,6 +117,15 @@ namespace Service.Services
                 Body = body
             };
             await _messageRepo.AddAsync(message);
+
+            await _notificationService.AddAsync(new Service.Helpers.DTOs.Notifications.NotificationCreateDto
+            {
+                UserId = receiverId,
+                Type = "message",
+                Title = "New message",
+                Body = $"{DisplayName(sender)} sent you a message.",
+                Href = $"/Dashboard/Messages?userId={userId}"
+            });
 
             return new MessageResultDto
             {

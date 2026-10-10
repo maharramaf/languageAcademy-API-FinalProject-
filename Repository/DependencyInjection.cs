@@ -39,6 +39,7 @@ namespace Repository
             services.AddScoped<IMessageRepository, MessageRepository>();
             services.AddScoped<ILessonProgressRepository, LessonProgressRepository>();
             services.AddScoped<ICertificateRepository, CertificateRepository>();
+            services.AddScoped<INotificationRepository, NotificationRepository>();
             services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
             return services;
         }

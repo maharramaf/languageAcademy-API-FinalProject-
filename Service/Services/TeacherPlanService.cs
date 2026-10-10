@@ -11,11 +11,16 @@ namespace Service.Services
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly ICourseRepository _courseRepo;
+        private readonly INotificationService _notificationService;
 
-        public TeacherPlanService(UserManager<AppUser> userManager, ICourseRepository courseRepo)
+        public TeacherPlanService(
+            UserManager<AppUser> userManager,
+            ICourseRepository courseRepo,
+            INotificationService notificationService)
         {
             _userManager = userManager;
             _courseRepo = courseRepo;
+            _notificationService = notificationService;
         }
 
         public async Task<PlanPageDto?> GetMineAsync(string userId)
@@ -50,6 +55,15 @@ namespace Service.Services
             var updated = await _userManager.UpdateAsync(user);
             if (!updated.Succeeded)
                 return Fail(updated.Errors.Select(e => e.Description));
+
+            await _notificationService.AddAsync(new Service.Helpers.DTOs.Notifications.NotificationCreateDto
+            {
+                UserId = userId,
+                Type = "announcement",
+                Title = "Teacher plan updated",
+                Body = $"Your teacher plan is now {user.TeacherPlan}.",
+                Href = "/Dashboard/TeacherPlan"
+            });
 
             return new PlanResultDto
             {

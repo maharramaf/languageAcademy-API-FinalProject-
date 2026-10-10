@@ -16,17 +16,23 @@ namespace Service.Services
         private readonly ICourseModuleRepository _moduleRepo;
         private readonly ILessonRepository _lessonRepo;
         private readonly UserManager<AppUser> _userManager;
+        private readonly IEnrollmentRepository _enrollmentRepo;
+        private readonly INotificationService _notificationService;
 
         public CourseService(
             ICourseRepository courseRepo,
             ICourseModuleRepository moduleRepo,
             ILessonRepository lessonRepo,
-            UserManager<AppUser> userManager)
+            UserManager<AppUser> userManager,
+            IEnrollmentRepository enrollmentRepo,
+            INotificationService notificationService)
         {
             _courseRepo = courseRepo;
             _moduleRepo = moduleRepo;
             _lessonRepo = lessonRepo;
             _userManager = userManager;
+            _enrollmentRepo = enrollmentRepo;
+            _notificationService = notificationService;
         }
 
         public async Task<IEnumerable<CourseDto>> GetAllUIAsync()
@@ -307,6 +313,23 @@ namespace Service.Services
                 Video = NormalizeVideo(dto.Video),
                 Order = await _lessonRepo.NextOrderAsync(moduleId)
             });
+
+            var course = await _courseRepo.GetByIdAsync(courseId);
+            if (course is not null)
+            {
+                var students = await _enrollmentRepo.GetByCourseAsync(courseId);
+                foreach (var enrollment in students)
+                {
+                    await _notificationService.AddAsync(new Service.Helpers.DTOs.Notifications.NotificationCreateDto
+                    {
+                        UserId = enrollment.StudentId,
+                        Type = "lesson",
+                        Title = "New lesson available",
+                        Body = $"{title} was added to {course.Title}.",
+                        Href = $"/Dashboard/Learn?slug={course.Slug}"
+                    });
+                }
+            }
 
             return OkWrite(title);
         }

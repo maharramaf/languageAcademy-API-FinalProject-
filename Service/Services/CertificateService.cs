@@ -13,19 +13,22 @@ namespace Service.Services
         private readonly ICourseRepository _courseRepo;
         private readonly ILessonProgressRepository _progressRepo;
         private readonly UserManager<AppUser> _userManager;
+        private readonly INotificationService _notificationService;
 
         public CertificateService(
             ICertificateRepository certificateRepo,
             IEnrollmentRepository enrollmentRepo,
             ICourseRepository courseRepo,
             ILessonProgressRepository progressRepo,
-            UserManager<AppUser> userManager)
+            UserManager<AppUser> userManager,
+            INotificationService notificationService)
         {
             _certificateRepo = certificateRepo;
             _enrollmentRepo = enrollmentRepo;
             _courseRepo = courseRepo;
             _progressRepo = progressRepo;
             _userManager = userManager;
+            _notificationService = notificationService;
         }
 
         public async Task<IReadOnlyList<CertificateDto>> GetMineAsync(string studentId)
@@ -99,7 +102,17 @@ namespace Service.Services
             var saved = await _certificateRepo.GetByStudentAndCourseAsync(studentId, courseId);
             var dto = saved is null ? null : await MapAsync(saved);
             if (dto is not null)
+            {
                 dto.Created = true;
+                await _notificationService.AddAsync(new Service.Helpers.DTOs.Notifications.NotificationCreateDto
+                {
+                    UserId = studentId,
+                    Type = "certificate",
+                    Title = "Certificate available",
+                    Body = $"Your certificate for {dto.CourseTitle} is ready.",
+                    Href = $"/Dashboard/Certificate?slug={dto.CourseSlug}"
+                });
+            }
             return dto;
         }
 

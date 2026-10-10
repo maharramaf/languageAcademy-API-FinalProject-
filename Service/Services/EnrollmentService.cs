@@ -14,17 +14,20 @@ namespace Service.Services
         private readonly ICourseRepository _courseRepo;
         private readonly ILessonProgressRepository _progressRepo;
         private readonly UserManager<AppUser> _userManager;
+        private readonly INotificationService _notificationService;
 
         public EnrollmentService(
             IEnrollmentRepository enrollmentRepo,
             ICourseRepository courseRepo,
             ILessonProgressRepository progressRepo,
-            UserManager<AppUser> userManager)
+            UserManager<AppUser> userManager,
+            INotificationService notificationService)
         {
             _enrollmentRepo = enrollmentRepo;
             _courseRepo = courseRepo;
             _progressRepo = progressRepo;
             _userManager = userManager;
+            _notificationService = notificationService;
         }
 
         public async Task<EnrollmentResultDto> EnrollAsync(string studentId, EnrollmentCreateDto dto)
@@ -54,6 +57,26 @@ namespace Service.Services
                 StudentId = studentId,
                 CourseId = course.Id
             });
+
+            await _notificationService.AddAsync(new Service.Helpers.DTOs.Notifications.NotificationCreateDto
+            {
+                UserId = studentId,
+                Type = "enrollment",
+                Title = "Enrollment successful",
+                Body = $"You enrolled in {course.Title}.",
+                Href = $"/Dashboard/Learn?slug={course.Slug}"
+            });
+            if (!string.IsNullOrWhiteSpace(course.TeacherId))
+            {
+                await _notificationService.AddAsync(new Service.Helpers.DTOs.Notifications.NotificationCreateDto
+                {
+                    UserId = course.TeacherId,
+                    Type = "instructor",
+                    Title = "New student enrolled",
+                    Body = $"A student enrolled in {course.Title}.",
+                    Href = $"/Dashboard/CourseLessons/{course.Id}"
+                });
+            }
 
             return Ok(course);
         }

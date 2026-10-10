@@ -9,10 +9,12 @@ namespace Service.Services
     public class PlanService : IPlanService
     {
         private readonly UserManager<AppUser> _userManager;
+        private readonly INotificationService _notificationService;
 
-        public PlanService(UserManager<AppUser> userManager)
+        public PlanService(UserManager<AppUser> userManager, INotificationService notificationService)
         {
             _userManager = userManager;
+            _notificationService = notificationService;
         }
 
         public async Task<PlanPageDto?> GetMineAsync(string userId)
@@ -45,10 +47,20 @@ namespace Service.Services
             if (!updated.Succeeded)
                 return Fail(updated.Errors.Select(e => e.Description));
 
+            var current = user.Plan.ToString().ToLowerInvariant();
+            await _notificationService.AddAsync(new Service.Helpers.DTOs.Notifications.NotificationCreateDto
+            {
+                UserId = userId,
+                Type = "announcement",
+                Title = "Plan updated",
+                Body = $"Your membership is now {user.Plan}.",
+                Href = "/Dashboard/Plans"
+            });
+
             return new PlanResultDto
             {
                 Succeeded = true,
-                Current = user.Plan.ToString().ToLowerInvariant()
+                Current = current
             };
         }
 

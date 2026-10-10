@@ -33,6 +33,7 @@ namespace Repository.Data
         public DbSet<Message> Messages { get; set; }
         public DbSet<LessonProgress> LessonProgresses { get; set; }
         public DbSet<Certificate> Certificates { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
         protected override void OnModelCreating(ModelBuilder builder)
         {

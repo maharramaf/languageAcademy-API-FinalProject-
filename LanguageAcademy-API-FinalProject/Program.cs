@@ -10,6 +10,7 @@ using Microsoft.OpenApi.Models;
 using Repository;
 using Repository.Data;
 using Service;
+using Service.Services.Interfaces;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -91,7 +92,7 @@ builder.Services.AddAuthentication(options =>
         {
             var accessToken = context.Request.Query["access_token"];
             if (!string.IsNullOrEmpty(accessToken)
-                && context.HttpContext.Request.Path.StartsWithSegments("/hubs/chat"))
+                && context.HttpContext.Request.Path.StartsWithSegments("/hubs"))
             {
                 context.Token = accessToken;
             }
@@ -103,6 +104,7 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddSingleton<IUserIdProvider, JwtUserIdProvider>();
 builder.Services.AddSignalR();
+builder.Services.AddScoped<INotificationPush, SignalRNotificationPush>();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("MvcClient", policy =>
@@ -159,4 +161,5 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 app.MapHub<ChatHub>("/hubs/chat");
+app.MapHub<NotificationHub>("/hubs/notify");
 app.Run();
