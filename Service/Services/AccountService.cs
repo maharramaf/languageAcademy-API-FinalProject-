@@ -132,6 +132,23 @@ namespace Service.Services
             return items;
         }
 
+        public async Task<int> CountStudentsAsync()
+        {
+            var users = await _userManager.GetUsersInRoleAsync(Roles.Student);
+            var count = 0;
+
+            foreach (var user in users)
+            {
+                var roles = await _userManager.GetRolesAsync(user);
+                if (roles.Contains(Roles.Teacher) || roles.Contains(Roles.Admin) || roles.Contains(Roles.SuperAdmin))
+                    continue;
+
+                count++;
+            }
+
+            return count;
+        }
+
         public async Task<ProfileDto?> GetProfileAsync(string userId)
         {
             var user = await FindUserAsync(userId);

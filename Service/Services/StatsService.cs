@@ -10,15 +10,18 @@ namespace Service.Services
         private readonly IStatsRepository _statsRepo;
         private readonly ICourseRepository _courseRepo;
         private readonly ITeacherRepository _teacherRepo;
+        private readonly IAccountService _accountService;
 
         public StatsService(
             IStatsRepository statsRepo,
             ICourseRepository courseRepo,
-            ITeacherRepository teacherRepo)
+            ITeacherRepository teacherRepo,
+            IAccountService accountService)
         {
             _statsRepo = statsRepo;
             _courseRepo = courseRepo;
             _teacherRepo = teacherRepo;
+            _accountService = accountService;
         }
 
         public async Task<StatsDto?> GetUIAsync()
@@ -29,7 +32,7 @@ namespace Service.Services
             return new StatsDto
             {
                 Id = section.Id,
-                Students = 0,
+                Students = await _accountService.CountStudentsAsync(),
                 Courses = await _courseRepo.CountAsync(),
                 Teachers = await _teacherRepo.CountAsync(),
                 Years = section.Years
