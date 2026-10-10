@@ -74,6 +74,11 @@ namespace Repository.Repositories
                 .ToListAsync();
         }
 
+        public Task<int> CountByTeacherIdAsync(string teacherId)
+        {
+            return _dbSet.CountAsync(m => m.TeacherId == teacherId);
+        }
+
         public Task SaveAsync()
         {
             return _dbContext.SaveChangesAsync();

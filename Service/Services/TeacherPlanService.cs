@@ -73,7 +73,7 @@ namespace Service.Services
                     Type = "standard",
                     Title = "Standard Teacher",
                     Price = 19,
-                    Info = "More courses. No card charge in this test."
+                    Info = "5 courses. No card charge in this test."
                 },
                 new()
                 {

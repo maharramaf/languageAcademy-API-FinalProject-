@@ -178,6 +178,14 @@ namespace Service.Services
                     var teacher = await ResolveTeacherAsync(dto.TeacherEmail);
                     if (teacher is null)
                         return Fail("Teacher was not found.");
+
+                    if (course.TeacherId != teacher.Id)
+                    {
+                        var blocked = await TeacherPlanBlockAsync(teacher);
+                        if (blocked is not null)
+                            return Fail(blocked);
+                    }
+
                     course.TeacherId = teacher.Id;
                 }
             }
@@ -535,6 +543,26 @@ namespace Service.Services
 
             var user = await _userManager.FindByIdAsync(teacherId);
             return user?.Email;
+        }
+
+        private async Task<string?> TeacherPlanBlockAsync(AppUser teacher)
+        {
+            var limit = teacher.TeacherPlan switch
+            {
+                CourseType.Demo => 1,
+                CourseType.Standard => 5,
+                CourseType.Premium => (int?)null,
+                _ => 1
+            };
+            if (limit is null)
+                return null;
+
+            var count = await _courseRepo.CountByTeacherIdAsync(teacher.Id);
+            if (count < limit)
+                return null;
+
+            var label = teacher.TeacherPlan == CourseType.Demo ? "Free" : teacher.TeacherPlan.ToString();
+            return $"This teacher's {label} plan allows {limit} course(s). Choose a higher teacher plan first.";
         }
 
         private async Task<AppUser?> ResolveTeacherAsync(string? email)
