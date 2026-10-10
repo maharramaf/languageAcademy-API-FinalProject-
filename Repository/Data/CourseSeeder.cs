@@ -277,10 +277,12 @@ namespace Repository.Data
                 ),
                 Modules = new List<CourseModule>
                 {
-                    Module(1, "Module 01 — Confidence", "3 lessons · 40 min",
+                    Module(1, "Module 01 — Confidence", "5 lessons · 50 min",
                         Lesson(1, "Lesson 01 — Speak so people listen", LessonKind.Video, Embed("eIho2S0ZahI"), 598),
                         Lesson(2, "Lesson 02 — Easy conversations", LessonKind.Video, Embed("I_tRSrPru94"), 360),
-                        Lesson(3, "Lesson 03 — Small talk practice", LessonKind.Video, Embed("h9HvFZUgxiM"), 900)
+                        Lesson(3, "Lesson 03 — Small talk practice", LessonKind.Video, Embed("h9HvFZUgxiM"), 900),
+                        Lesson(4, "Quiz - Speaking check", LessonKind.Quiz, null, 600),
+                        Lesson(5, "Homework - Record a 1-minute talk", LessonKind.Homework, null, 0)
                     )
                 }
             };

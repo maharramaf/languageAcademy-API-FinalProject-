@@ -102,8 +102,9 @@ namespace Service.Services
             if (!await _enrollmentRepo.ExistsAsync(userId, lesson.CourseModule.CourseId))
                 return Fail("Enroll in this course first.");
 
+            var kind = lesson.Kind.ToString().ToLowerInvariant();
             if (await _progressRepo.ExistsAsync(userId, lessonId))
-                return new RewardCompleteResultDto { Succeeded = true, AlreadyCompleted = true };
+                return new RewardCompleteResultDto { Succeeded = true, AlreadyCompleted = true, Kind = kind };
 
             var (xp, points) = GainFor(lesson.Kind);
             user.RewardXp += xp;
@@ -130,7 +131,8 @@ namespace Service.Services
             {
                 Succeeded = true,
                 XpGained = xp,
-                PointsGained = points
+                PointsGained = points,
+                Kind = kind
             };
         }
 
