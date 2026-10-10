@@ -57,5 +57,10 @@ namespace Repository.Repositories
                 .OrderByDescending(m => m.CreatedAt)
                 .ToListAsync();
         }
+
+        public Task<int> CountByStudentAsync(string studentId)
+        {
+            return _dbSet.CountAsync(m => m.StudentId == studentId);
+        }
     }
 }

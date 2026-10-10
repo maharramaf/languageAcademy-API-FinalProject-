@@ -14,6 +14,12 @@ namespace Domain.Configurations
             builder.Property(m => m.Surname).IsRequired().HasMaxLength(80);
             builder.Property(m => m.Plan).HasDefaultValue(CourseType.Demo);
             builder.Property(m => m.TeacherPlan).HasDefaultValue(CourseType.Demo);
+            builder.Property(m => m.RewardXp).HasDefaultValue(0);
+            builder.Property(m => m.RewardPoints).HasDefaultValue(0);
+            builder.Property(m => m.RewardLessons).HasDefaultValue(0);
+            builder.Property(m => m.RewardHomework).HasDefaultValue(0);
+            builder.Property(m => m.RewardQuizzes).HasDefaultValue(0);
+            builder.Property(m => m.RewardStreakDays).HasDefaultValue(0);
             builder.Property(m => m.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
         }
     }

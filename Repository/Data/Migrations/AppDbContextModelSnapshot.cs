@@ -210,6 +210,39 @@ namespace Repository.Data.Migrations
                         .HasColumnType("int")
                         .HasDefaultValue(1);
 
+                    b.Property<int>("RewardHomework")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<DateTime?>("RewardLastActive")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("RewardLessons")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<int>("RewardPoints")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<int>("RewardQuizzes")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<int>("RewardStreakDays")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<int>("RewardXp")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
