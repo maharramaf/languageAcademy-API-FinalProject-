@@ -10,6 +10,7 @@ namespace Repository.Repositories.Interfaces
         Task<IReadOnlyList<string>> GetTeacherIdsByStudentAsync(string studentId);
         Task<IReadOnlyList<string>> GetStudentIdsByTeacherAsync(string teacherId);
         Task<IReadOnlyList<Enrollment>> GetByTeacherAsync(string teacherId);
+        Task<IReadOnlyList<Enrollment>> GetByCourseAsync(int courseId);
         Task<int> CountByStudentAsync(string studentId);
     }
 }

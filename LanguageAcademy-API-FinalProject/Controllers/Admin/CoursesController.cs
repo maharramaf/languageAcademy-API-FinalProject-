@@ -12,10 +12,12 @@ namespace LanguageAcademy_API_FinalProject.Controllers.Admin
     public class CoursesController : ControllerBase
     {
         private readonly ICourseService _courseService;
+        private readonly IEnrollmentService _enrollmentService;
 
-        public CoursesController(ICourseService courseService)
+        public CoursesController(ICourseService courseService, IEnrollmentService enrollmentService)
         {
             _courseService = courseService;
+            _enrollmentService = enrollmentService;
         }
 
         [HttpGet("{id:int}")]
@@ -74,6 +76,12 @@ namespace LanguageAcademy_API_FinalProject.Controllers.Admin
             var course = await _courseService.GetCurriculumAsync(id);
             if (course is null) return NotFound();
             return Ok(course);
+        }
+
+        [HttpGet("{id:int}/classmates")]
+        public async Task<IActionResult> GetClassmatesAsync(int id)
+        {
+            return Ok(await _enrollmentService.GetClassmatesAsync(id));
         }
 
         [HttpPost("{id:int}/modules")]

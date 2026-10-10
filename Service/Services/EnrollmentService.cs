@@ -91,6 +91,9 @@ namespace Service.Services
                 return null;
 
             var done = await _progressRepo.GetLessonIdsByStudentAsync(studentId);
+            var teacher = string.IsNullOrWhiteSpace(course.TeacherId)
+                ? null
+                : await _userManager.FindByIdAsync(course.TeacherId);
 
             return new CourseDetailDto
             {
@@ -105,6 +108,8 @@ namespace Service.Services
                 Summary = course.Summary,
                 Overview = course.Overview,
                 Video = course.Video,
+                TeacherEmail = teacher?.Email,
+                TeacherName = DisplayName(teacher),
                 Modules = course.Modules.OrderBy(m => m.Order).Select(module => new CourseModuleDto
                 {
                     Id = module.Id,
@@ -123,6 +128,31 @@ namespace Service.Services
                     }).ToList()
                 }).ToList()
             };
+        }
+
+        public async Task<IReadOnlyList<ClassmateDto>> GetClassmatesAsync(int courseId)
+        {
+            if (courseId <= 0)
+                return Array.Empty<ClassmateDto>();
+
+            var items = await _enrollmentRepo.GetByCourseAsync(courseId);
+            return items
+                .Where(m => m.Student is not null)
+                .Select(m => new ClassmateDto
+                {
+                    Name = DisplayName(m.Student) ?? m.Student.Email ?? "Student",
+                    Email = m.Student.Email ?? string.Empty
+                })
+                .ToList();
+        }
+
+        private static string? DisplayName(AppUser? user)
+        {
+            if (user is null)
+                return null;
+
+            var name = (user.Name + " " + user.Surname).Trim();
+            return string.IsNullOrEmpty(name) ? user.Email : name;
         }
 
         private static EnrollmentResultDto Ok(Course course)

@@ -9,5 +9,6 @@ namespace Service.Services.Interfaces
         Task<IReadOnlyList<CourseDto>> GetMineAsync(string studentId);
         Task<bool> IsEnrolledAsync(string studentId, int courseId);
         Task<CourseDetailDto?> GetLearnAsync(string studentId, string slug);
+        Task<IReadOnlyList<ClassmateDto>> GetClassmatesAsync(int courseId);
     }
 }

@@ -49,6 +49,17 @@ namespace LanguageAcademy_API_FinalProject.Controllers.Client
             return Ok(course);
         }
 
+        [HttpGet("classmates/{courseId:int}")]
+        public async Task<IActionResult> GetClassmatesAsync(int courseId)
+        {
+            var studentId = StudentId();
+            if (studentId is null) return Unauthorized();
+            if (!await _enrollmentService.IsEnrolledAsync(studentId, courseId))
+                return NotFound();
+
+            return Ok(await _enrollmentService.GetClassmatesAsync(courseId));
+        }
+
         [HttpPost]
         public async Task<IActionResult> EnrollAsync([FromBody] EnrollmentCreateDto? dto)
         {

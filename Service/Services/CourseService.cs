@@ -129,7 +129,7 @@ namespace Service.Services
                 Image = (dto.Image ?? string.Empty).Trim(),
                 Summary = dto.Summary.Trim(),
                 Overview = dto.Overview.Trim(),
-                Video = string.IsNullOrWhiteSpace(dto.Video) ? null : dto.Video.Trim()
+                Video = NormalizeVideo(dto.Video)
             });
 
             return new CourseCreateResultDto
@@ -164,6 +164,8 @@ namespace Service.Services
             course.Price = dto.Price;
             if (!string.IsNullOrWhiteSpace(dto.Image))
                 course.Image = dto.Image.Trim();
+            if (dto.Video is not null)
+                course.Video = NormalizeVideo(dto.Video);
             course.Summary = dto.Summary.Trim();
             course.Overview = dto.Overview.Trim();
 
@@ -257,6 +259,8 @@ namespace Service.Services
                 Summary = course.Summary,
                 Overview = course.Overview,
                 Video = course.Video,
+                TeacherEmail = await TeacherEmailAsync(course.TeacherId),
+                TeacherName = await TeacherNameAsync(course.TeacherId),
                 Modules = MapModules(course.Modules)
             };
         }
@@ -538,11 +542,25 @@ namespace Service.Services
 
         private async Task<string?> TeacherEmailAsync(string? teacherId)
         {
-            if (string.IsNullOrWhiteSpace(teacherId))
+            var user = await FindTeacherAsync(teacherId);
+            return user?.Email;
+        }
+
+        private async Task<string?> TeacherNameAsync(string? teacherId)
+        {
+            var user = await FindTeacherAsync(teacherId);
+            if (user is null)
                 return null;
 
-            var user = await _userManager.FindByIdAsync(teacherId);
-            return user?.Email;
+            var name = (user.Name + " " + user.Surname).Trim();
+            return string.IsNullOrEmpty(name) ? user.Email : name;
+        }
+
+        private Task<AppUser?> FindTeacherAsync(string? teacherId)
+        {
+            return string.IsNullOrWhiteSpace(teacherId)
+                ? Task.FromResult<AppUser?>(null)
+                : _userManager.FindByIdAsync(teacherId);
         }
 
         private async Task<string?> TeacherPlanBlockAsync(AppUser teacher)

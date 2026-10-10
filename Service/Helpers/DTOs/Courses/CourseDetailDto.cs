@@ -21,6 +21,7 @@ namespace Service.Helpers.DTOs.Courses
         public string Overview { get; set; } = string.Empty;
         public string? Video { get; set; }
         public string? TeacherEmail { get; set; }
+        public string? TeacherName { get; set; }
         public List<string> Outcomes { get; set; } = new();
         public List<ReviewDto> Reviews { get; set; } = new();
         public List<CourseModuleDto> Modules { get; set; } = new();

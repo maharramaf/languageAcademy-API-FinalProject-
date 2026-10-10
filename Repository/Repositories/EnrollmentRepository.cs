@@ -58,6 +58,16 @@ namespace Repository.Repositories
                 .ToListAsync();
         }
 
+        public async Task<IReadOnlyList<Enrollment>> GetByCourseAsync(int courseId)
+        {
+            return await _dbSet.AsNoTracking()
+                .Include(m => m.Student)
+                .Where(m => m.CourseId == courseId)
+                .OrderBy(m => m.Student.Name)
+                .ThenBy(m => m.Student.Surname)
+                .ToListAsync();
+        }
+
         public Task<int> CountByStudentAsync(string studentId)
         {
             return _dbSet.CountAsync(m => m.StudentId == studentId);
