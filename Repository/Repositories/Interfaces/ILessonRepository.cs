@@ -10,6 +10,7 @@ namespace Repository.Repositories.Interfaces
     public interface ILessonRepository : IBaseRepository<Lesson>
     {
         Task<Lesson?> GetByIdAsync(int id);
+        Task<Lesson?> GetWithCourseAsync(int id);
         Task<int> NextOrderAsync(int moduleId);
         Task AddAsync(Lesson lesson);
         Task SaveAsync();

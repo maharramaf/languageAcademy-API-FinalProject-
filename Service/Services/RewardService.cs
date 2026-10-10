@@ -1,4 +1,5 @@
 using Domain.Entities;
+using Domain.Enums;
 using Microsoft.AspNetCore.Identity;
 using Repository.Repositories.Interfaces;
 using Service.Helpers.DTOs.Rewards;
@@ -22,11 +23,19 @@ namespace Service.Services
 
         private readonly UserManager<AppUser> _userManager;
         private readonly IEnrollmentRepository _enrollmentRepo;
+        private readonly ILessonRepository _lessonRepo;
+        private readonly ILessonProgressRepository _progressRepo;
 
-        public RewardService(UserManager<AppUser> userManager, IEnrollmentRepository enrollmentRepo)
+        public RewardService(
+            UserManager<AppUser> userManager,
+            IEnrollmentRepository enrollmentRepo,
+            ILessonRepository lessonRepo,
+            ILessonProgressRepository progressRepo)
         {
             _userManager = userManager;
             _enrollmentRepo = enrollmentRepo;
+            _lessonRepo = lessonRepo;
+            _progressRepo = progressRepo;
         }
 
         public async Task<RewardsDto?> GetMineAsync(string userId)
@@ -74,6 +83,75 @@ namespace Service.Services
                     Badge("course_champion", "Course Champion", courses, 1),
                     Badge("fast_learner", "Fast Learner", user.RewardLessons, 10)
                 }
+            };
+        }
+
+        public async Task<RewardCompleteResultDto> CompleteLessonAsync(string userId, int lessonId)
+        {
+            if (string.IsNullOrWhiteSpace(userId))
+                return Fail("Account was not found.");
+
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user is null)
+                return Fail("Account was not found.");
+
+            var lesson = await _lessonRepo.GetWithCourseAsync(lessonId);
+            if (lesson?.CourseModule?.Course is null)
+                return Fail("Lesson was not found.");
+
+            if (!await _enrollmentRepo.ExistsAsync(userId, lesson.CourseModule.CourseId))
+                return Fail("Enroll in this course first.");
+
+            if (await _progressRepo.ExistsAsync(userId, lessonId))
+                return new RewardCompleteResultDto { Succeeded = true, AlreadyCompleted = true };
+
+            var (xp, points) = GainFor(lesson.Kind);
+            user.RewardXp += xp;
+            user.RewardPoints += points;
+            if (lesson.Kind == LessonKind.Quiz)
+                user.RewardQuizzes += 1;
+            else if (lesson.Kind == LessonKind.Homework)
+                user.RewardHomework += 1;
+            else
+                user.RewardLessons += 1;
+
+            BumpStreak(user);
+            var updated = await _userManager.UpdateAsync(user);
+            if (!updated.Succeeded)
+                return Fail(updated.Errors.Select(e => e.Description));
+
+            await _progressRepo.AddAsync(new LessonProgress
+            {
+                StudentId = userId,
+                LessonId = lessonId
+            });
+
+            return new RewardCompleteResultDto
+            {
+                Succeeded = true,
+                XpGained = xp,
+                PointsGained = points
+            };
+        }
+
+        private static (int Xp, int Points) GainFor(LessonKind kind)
+        {
+            return kind switch
+            {
+                LessonKind.Quiz => (50, 30),
+                LessonKind.Homework => (50, 20),
+                _ => (20, 0)
+            };
+        }
+
+        private static RewardCompleteResultDto Fail(string error) => Fail(new[] { error });
+
+        private static RewardCompleteResultDto Fail(IEnumerable<string> errors)
+        {
+            return new RewardCompleteResultDto
+            {
+                Succeeded = false,
+                Errors = errors.ToList()
             };
         }
 

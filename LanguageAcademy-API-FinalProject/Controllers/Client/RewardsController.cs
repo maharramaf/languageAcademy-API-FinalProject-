@@ -31,5 +31,20 @@ namespace LanguageAcademy_API_FinalProject.Controllers.Client
             if (page is null) return NotFound();
             return Ok(page);
         }
+
+        [HttpPost("lessons/{lessonId:int}")]
+        public async Task<IActionResult> CompleteLessonAsync(int lessonId)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)
+                ?? User.FindFirstValue(JwtRegisteredClaimNames.Sub);
+            if (string.IsNullOrWhiteSpace(userId))
+                return Unauthorized();
+
+            var result = await _rewardService.CompleteLessonAsync(userId, lessonId);
+            if (!result.Succeeded)
+                return BadRequest(new { errors = result.Errors });
+
+            return Ok(new { result.AlreadyCompleted, result.XpGained, result.PointsGained });
+        }
     }
 }

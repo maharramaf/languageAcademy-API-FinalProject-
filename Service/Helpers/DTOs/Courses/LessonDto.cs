@@ -14,5 +14,6 @@ namespace Service.Helpers.DTOs.Courses
         public string? Video { get; set; }
         public int Seconds { get; set; }
         public int Order { get; set; }
+        public bool Completed { get; set; }
     }
 }

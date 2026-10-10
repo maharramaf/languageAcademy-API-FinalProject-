@@ -20,6 +20,14 @@ namespace Repository.Repositories
             return _dbSet.FirstOrDefaultAsync(m => m.Id == id);
         }
 
+        public Task<Lesson?> GetWithCourseAsync(int id)
+        {
+            return _dbSet.AsNoTracking()
+                .Include(m => m.CourseModule)
+                    .ThenInclude(m => m.Course)
+                .FirstOrDefaultAsync(m => m.Id == id);
+        }
+
         public async Task AddAsync(Lesson lesson)
         {
             await _dbSet.AddAsync(lesson);

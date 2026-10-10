@@ -10,11 +10,16 @@ namespace Service.Services
     {
         private readonly IEnrollmentRepository _enrollmentRepo;
         private readonly ICourseRepository _courseRepo;
+        private readonly ILessonProgressRepository _progressRepo;
 
-        public EnrollmentService(IEnrollmentRepository enrollmentRepo, ICourseRepository courseRepo)
+        public EnrollmentService(
+            IEnrollmentRepository enrollmentRepo,
+            ICourseRepository courseRepo,
+            ILessonProgressRepository progressRepo)
         {
             _enrollmentRepo = enrollmentRepo;
             _courseRepo = courseRepo;
+            _progressRepo = progressRepo;
         }
 
         public async Task<EnrollmentResultDto> EnrollAsync(string studentId, EnrollmentCreateDto dto)
@@ -73,6 +78,8 @@ namespace Service.Services
             if (!await _enrollmentRepo.ExistsAsync(studentId, course.Id))
                 return null;
 
+            var done = await _progressRepo.GetLessonIdsByStudentAsync(studentId);
+
             return new CourseDetailDto
             {
                 Id = course.Id,
@@ -99,7 +106,8 @@ namespace Service.Services
                         Kind = lesson.Kind.ToString().ToLowerInvariant(),
                         Video = lesson.Video,
                         Seconds = lesson.Seconds,
-                        Order = lesson.Order
+                        Order = lesson.Order,
+                        Completed = done.Contains(lesson.Id)
                     }).ToList()
                 }).ToList()
             };
