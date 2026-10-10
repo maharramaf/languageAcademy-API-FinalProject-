@@ -1,4 +1,6 @@
 using Domain.Entities;
+using Domain.Enums;
+using Microsoft.AspNetCore.Identity;
 using Repository.Repositories.Interfaces;
 using Service.Helpers.DTOs.Courses;
 using Service.Helpers.DTOs.Enrollments;
@@ -11,15 +13,18 @@ namespace Service.Services
         private readonly IEnrollmentRepository _enrollmentRepo;
         private readonly ICourseRepository _courseRepo;
         private readonly ILessonProgressRepository _progressRepo;
+        private readonly UserManager<AppUser> _userManager;
 
         public EnrollmentService(
             IEnrollmentRepository enrollmentRepo,
             ICourseRepository courseRepo,
-            ILessonProgressRepository progressRepo)
+            ILessonProgressRepository progressRepo,
+            UserManager<AppUser> userManager)
         {
             _enrollmentRepo = enrollmentRepo;
             _courseRepo = courseRepo;
             _progressRepo = progressRepo;
+            _userManager = userManager;
         }
 
         public async Task<EnrollmentResultDto> EnrollAsync(string studentId, EnrollmentCreateDto dto)
@@ -36,6 +41,13 @@ namespace Service.Services
 
             if (await _enrollmentRepo.ExistsAsync(studentId, course.Id))
                 return Ok(course);
+
+            var user = await _userManager.FindByIdAsync(studentId);
+            if (user is null)
+                return Fail("Student was not found.");
+
+            if (user.Plan < course.Type)
+                return Fail($"Your {user.Plan} plan cannot enroll in a {course.Type} course. Choose a higher plan first.");
 
             await _enrollmentRepo.AddAsync(new Enrollment
             {
